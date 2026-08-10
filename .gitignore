@@ -1,0 +1,28 @@
+# Virtual environments
+.venv/
+.venv311/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# IDE
+.idea/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Data files
+*.csv
+*.xlsx
+
+# Python test/cache
+.pytest_cache/
+.coverage
