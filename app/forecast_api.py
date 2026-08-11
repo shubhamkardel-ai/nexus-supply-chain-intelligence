@@ -75,4 +75,6 @@ def forecast(request: ForecastRequest):
     return {
         "product_id": request.product_id,
         "predicted_units_sold": round(float(prediction), 2),
+        "forecast_type": "demand_forecast",
+        "model": "Random Forest",
     }
