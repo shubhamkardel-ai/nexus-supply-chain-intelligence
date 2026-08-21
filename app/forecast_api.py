@@ -4,6 +4,8 @@ import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from services.inventory_service import calculate_inventory_risk
+
 from services.forecast_model import (
     prepare_data,
     train_model,
@@ -28,6 +30,7 @@ class ForecastRequest(BaseModel):
     lag_7: float
     rolling_mean_7: float
     rolling_mean_30: float
+    current_inventory: int
 
 
 # Train the model when the API starts
@@ -78,6 +81,11 @@ def forecast(request: ForecastRequest):
         encoded_data,
     )
 
+    inventory_analysis = calculate_inventory_risk(
+        current_inventory=request.current_inventory,
+        predicted_demand=prediction,
+    )
+
     return {
         "product_id": request.product_id,
         "predicted_units_sold": round(float(prediction), 2),
@@ -85,4 +93,6 @@ def forecast(request: ForecastRequest):
         "forecast_upper": round(float(upper_bound), 2),
         "forecast_type": "demand_forecast",
         "model": "Random Forest",
+        "inventory_risk": inventory_analysis["inventory_risk"],
+        "current_inventory": inventory_analysis["current_inventory"],
     }
