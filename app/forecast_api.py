@@ -4,8 +4,11 @@ import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from services.forecast_model import prepare_data, train_model
-
+from services.forecast_model import (
+    prepare_data,
+    train_model,
+    predict_with_range,
+)
 
 app = FastAPI(
     title="NEXUS Supply Chain Intelligence",
@@ -70,11 +73,16 @@ def forecast(request: ForecastRequest):
 
     encoded_data = preprocessor.transform(input_data)
 
-    prediction = model.predict(encoded_data)[0]
+    prediction, lower_bound, upper_bound = predict_with_range(
+        model,
+        encoded_data,
+    )
 
     return {
         "product_id": request.product_id,
         "predicted_units_sold": round(float(prediction), 2),
+        "forecast_lower": round(float(lower_bound), 2),
+        "forecast_upper": round(float(upper_bound), 2),
         "forecast_type": "demand_forecast",
         "model": "Random Forest",
     }

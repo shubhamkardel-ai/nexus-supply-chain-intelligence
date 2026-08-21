@@ -80,6 +80,19 @@ def train_model(X_train, y_train):
 
     return model, preprocessor
 
+def predict_with_range(model, encoded_data):
+    tree_predictions = [
+        tree.predict(encoded_data)[0]
+        for tree in model.estimators_
+    ]
+
+    prediction = model.predict(encoded_data)[0]
+
+    lower_bound = pd.Series(tree_predictions).quantile(0.10)
+    upper_bound = pd.Series(tree_predictions).quantile(0.90)
+
+    return prediction, lower_bound, upper_bound
+
 
 if __name__ == "__main__":
     file_path = Path("data/sales.csv")
