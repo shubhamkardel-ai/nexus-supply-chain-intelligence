@@ -56,6 +56,12 @@ def health_check():
         "status": "healthy",
     }
 
+@app.get("/inventory/status")
+def inventory_status():
+    return {
+        "service": "inventory_management",
+        "status": "active",
+    }
 
 @app.post("/forecast")
 def forecast(request: ForecastRequest):
