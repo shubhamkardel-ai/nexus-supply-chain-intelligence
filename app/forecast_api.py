@@ -4,8 +4,10 @@ import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from services.inventory_service import calculate_inventory_risk
-
+from services.inventory_service import (
+    calculate_inventory_risk,
+    calculate_reorder_quantity,
+)
 from services.forecast_model import (
     prepare_data,
     train_model,
@@ -86,6 +88,11 @@ def forecast(request: ForecastRequest):
         predicted_demand=prediction,
     )
 
+    reorder_quantity = calculate_reorder_quantity(
+        current_inventory=request.current_inventory,
+        predicted_demand=prediction,
+    )
+
     return {
         "product_id": request.product_id,
         "predicted_units_sold": round(float(prediction), 2),
@@ -95,4 +102,5 @@ def forecast(request: ForecastRequest):
         "model": "Random Forest",
         "inventory_risk": inventory_analysis["inventory_risk"],
         "current_inventory": inventory_analysis["current_inventory"],
+        "recommended_reorder_quantity": reorder_quantity,
     }
