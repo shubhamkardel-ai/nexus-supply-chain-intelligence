@@ -1,7 +1,11 @@
+from models.inventory import InventoryStatus
+
 def calculate_inventory_risk(
+    product_id: str,
     current_inventory: int,
     predicted_demand: float,
 ):
+
     if current_inventory < predicted_demand:
         risk = "HIGH"
     elif current_inventory < predicted_demand * 1.2:
@@ -9,11 +13,16 @@ def calculate_inventory_risk(
     else:
         risk = "LOW"
 
-    return {
-        "current_inventory": current_inventory,
-        "predicted_demand": round(predicted_demand, 2),
-        "inventory_risk": risk,
-    }
+    return InventoryStatus(
+        product_id=product_id,
+        current_inventory=current_inventory,
+        predicted_demand=round(predicted_demand, 2),
+        inventory_risk=risk,
+        recommended_reorder_quantity=calculate_reorder_quantity(
+            current_inventory=current_inventory,
+            predicted_demand=predicted_demand,
+        ),
+    )
 
 
 def calculate_reorder_quantity(
@@ -33,6 +42,7 @@ if __name__ == "__main__":
     predicted_demand = 22.48
 
     risk = calculate_inventory_risk(
+        product_id="P001",
         current_inventory=current_inventory,
         predicted_demand=predicted_demand,
     )

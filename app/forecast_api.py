@@ -90,6 +90,7 @@ def forecast(request: ForecastRequest):
     )
 
     inventory_analysis = calculate_inventory_risk(
+        product_id=request.product_id,
         current_inventory=request.current_inventory,
         predicted_demand=prediction,
     )
@@ -106,7 +107,7 @@ def forecast(request: ForecastRequest):
         "forecast_upper": round(float(upper_bound), 2),
         "forecast_type": "demand_forecast",
         "model": "Random Forest",
-        "inventory_risk": inventory_analysis["inventory_risk"],
-        "current_inventory": inventory_analysis["current_inventory"],
+        "inventory_risk": inventory_analysis.inventory_risk,
+        "current_inventory": inventory_analysis.current_inventory,
         "recommended_reorder_quantity": reorder_quantity,
     }
