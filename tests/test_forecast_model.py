@@ -30,3 +30,26 @@ def test_train_model():
     assert model is not None
     assert preprocessor is not None
     assert len(model.estimators_) == 200
+
+def test_predict_with_range():
+    from services.forecast_model import predict_with_range
+
+    file_path = Path("data/sales.csv")
+
+    X_train, X_test, y_train, y_test = prepare_data(file_path)
+
+    model, preprocessor = train_model(
+        X_train,
+        y_train,
+    )
+
+    encoded_data = preprocessor.transform(X_test.iloc[[0]])
+
+    prediction, lower_bound, upper_bound = predict_with_range(
+        model,
+        encoded_data,
+    )
+
+    assert prediction >= 0
+    assert lower_bound <= prediction
+    assert upper_bound >= prediction
