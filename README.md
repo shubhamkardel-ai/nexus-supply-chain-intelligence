@@ -1,333 +1,456 @@
-🧠 NEXUS Supply Chain Intelligence
+# ⚡ NEXUS Supply Chain Intelligence
 
-<div align="center">
+<p align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:07111F,25:0B2239,50:123B55,75:00A6A6,100:00E5C7&height=270&section=header&text=NEXUS&fontSize=68&fontColor=FFFFFF&fontAlignY=38&desc=AI-POWERED%20SUPPLY%20CHAIN%20INTELLIGENCE&descAlignY=62&descSize=18&animation=fadeIn" width="100%"/>
+<img src="https://img.shields.io/badge/NEXUS-Supply%20Chain%20Intelligence-0A0F1C?style=for-the-badge&logo=probot&logoColor=00E5FF" />
 
-<br>
+<img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
 
-<img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=19&duration=2200&pause=700&color=00E5C7&center=true&vCenter=true&width=1000&lines=FORECAST+%7C+ANALYZE+%7C+OPTIMIZE;DEMAND+INTELLIGENCE+SYSTEM+ONLINE;LEAKAGE-SAFE+FORECASTING+PIPELINE;INVENTORY+RISK+ANALYSIS+ACTIVE;RANDOM+FOREST+FORECASTING+ENGINE;FASTAPI+DECISION+SUPPORT+SERVICE;SUPPLY+CHAIN+INTELLIGENCE+READY"/>
+<img src="https://img.shields.io/badge/FastAPI-API-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
 
-<br><br>
+<img src="https://img.shields.io/badge/Scikit--Learn-ML-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" />
 
-<img src="https://img.shields.io/badge/PROJECT-NEXUS-00E5C7?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/STATUS-COMPLETE-00D084?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/ML-RANDOM%20FOREST-00A6A6?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/API-FASTAPI-00E5C7?style=for-the-badge&labelColor=07111F"/>
+<img src="https://img.shields.io/badge/Pandas-Data-150458?style=for-the-badge&logo=pandas&logoColor=white" />
 
-</div>
+<img src="https://img.shields.io/badge/Pytest-18%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white" />
 
-🧠 What is NEXUS?
+</p>
 
-NEXUS Supply Chain Intelligence is an AI-powered supply chain decision-support system that transforms historical sales data into demand forecasts and inventory insights.
+<p align="center">
 
-Instead of looking only at historical sales, NEXUS combines:
+<strong>AI-powered demand forecasting + inventory intelligence for modern supply chains.</strong>
 
-📊 Demand Intelligence
+<br />
 
-📦 Inventory Intelligence
+Predict demand. Detect inventory risk. Recommend replenishment.
 
-Historical Sales
+</p>
 
-Inventory Risk
+---
 
-Calendar Features
+## 🛰️ SYSTEM STATUS
 
-Reorder Recommendations
+| Component                  | Status            |
+| -------------------------- | ----------------- |
+| Demand Feature Engineering | 🟢 Operational    |
+| Forecasting Engine         | 🟢 Operational    |
+| Random Forest Model        | 🟢 Operational    |
+| Forecast Prediction Range  | 🟢 Operational    |
+| Inventory Risk Engine      | 🟢 Operational    |
+| Reorder Recommendation     | 🟢 Operational    |
+| FastAPI Service            | 🟢 Operational    |
+| Automated Tests            | 🟢 18 Passed      |
+| Git Repository             | 🟢 Clean / Synced |
 
-Lag Features
+> **NEXUS** transforms historical sales data into actionable demand and inventory decisions.
 
-Current Inventory
+---
 
-Rolling Demand
+## 🧠 WHAT IS NEXUS?
 
-Demand-Aware Decisions
+NEXUS is an end-to-end supply-chain intelligence platform designed around one central question:
 
-Machine Learning
+```text
+                    "What should we expect to sell,
+                     and what should we do about inventory?"
+```
 
-Operational Insights
+Instead of stopping at a machine-learning prediction, NEXUS continues the decision pipeline:
 
-The platform combines:
-
-Historical Sales + Leakage-Safe Features + Machine Learning + Forecast Ranges + Inventory Analysis + FastAPI
-
-into a single supply-chain intelligence application.
-
-✨ The Intelligence Layer
-
-<div align="center">
-
-<table width="100%" cellspacing="0" cellpadding="20">
-<tr>
-<td align="center">
-
-📊
-
-OBSERVE
-
-Historical product-level sales data.
-
-</td>
-<td align="center">
-
-🧠
-
-UNDERSTAND
-
-Build calendar and historical demand features.
-
-</td>
-<td align="center">
-
-🔮
-
-FORECAST
-
-Predict future demand with Random Forest.
-
-</td>
-<td align="center">
-
-📦
-
-ASSESS
-
-Evaluate inventory risk and reorder needs.
-
-</td>
-<td align="center">
-
-🚀
-
-SERVE
-
-Expose decisions through FastAPI.
-
-</td>
-</tr>
-</table>
-
-</div>
-
-🎯 Project Vision
-
-The goal of NEXUS is simple:
-
-Turn historical demand into actionable supply-chain decisions.
-
-A traditional forecasting workflow may stop at:
-
-Sales Data → Forecast
-
-NEXUS extends the workflow into:
-
-Sales Data → Feature Intelligence → Forecast → Forecast Range → Inventory Risk → Reorder Decision
-
-This makes the system useful as a foundation for AI-assisted supply-chain planning.
-
-🌌 Platform Overview
-
-<div align="center">
-
-<img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=22&duration=2400&pause=700&color=00E5C7&center=true&vCenter=true&width=950&lines=SUPPLY+CHAIN+INTELLIGENCE+CORE;HISTORICAL+DATA+%E2%86%92+DEMAND+FEATURES;DEMAND+FEATURES+%E2%86%92+ML+FORECAST;FORECAST+%E2%86%92+INVENTORY+INTELLIGENCE;INVENTORY+INTELLIGENCE+%E2%86%92+DECISION+SUPPORT"/>
-
-</div>
-
+```mermaid
 flowchart LR
 
-    A["📊 Historical Sales"] --> B["🧩 Feature Engineering"]
-
+    A["📊 Historical Sales"] --> B["⚙️ Feature Engineering"]
     B --> C["🧠 Random Forest"]
-
-    C --> D["🔮 Demand Forecast"]
-
-    D --> E["📈 Forecast Range"]
-
+    C --> D["📈 Demand Forecast"]
+    D --> E["🎯 Prediction Range"]
     E --> F["📦 Inventory Analysis"]
+    F --> G["🚦 Risk Classification"]
+    G --> H["🔄 Reorder Recommendation"]
 
-    F --> G["⚠️ Risk Level"]
+    style A fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style B fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style C fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style D fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style E fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style F fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style G fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+    style H fill:#0A0F1C,color:#00E5FF,stroke:#00E5FF
+```
 
-    F --> H["🔁 Reorder Quantity"]
+---
 
-    G --> I["🚀 FastAPI"]
+# 🏗️ SYSTEM ARCHITECTURE
 
-    H --> I
+```mermaid
+flowchart TB
 
-🔬 Core Features
+    USER["👤 User / Recruiter / Supply Chain Analyst"]
 
-📊 01 — Demand Feature Engineering
+    API["🚀 FastAPI<br/>Forecast API"]
 
-The feature pipeline creates calendar, business, and historical demand features.
+    REQUEST["📥 Forecast Request"]
 
-Calendar Features
+    FEATURES["⚙️ Demand Feature Engine"]
 
+    DATA["🗄️ sales.csv"]
+
+    MODEL["🧠 Random Forest<br/>Forecasting Engine"]
+
+    RANGE["📊 Prediction Range<br/>10th → 90th percentile"]
+
+    INVENTORY["📦 Inventory Intelligence"]
+
+    RISK["🚦 Risk Engine"]
+
+    REORDER["🔄 Reorder Recommendation"]
+
+    RESPONSE["📤 Forecast Response"]
+
+    USER --> API
+    API --> REQUEST
+    REQUEST --> FEATURES
+    DATA --> FEATURES
+    FEATURES --> MODEL
+    MODEL --> RANGE
+    RANGE --> INVENTORY
+    INVENTORY --> RISK
+    RISK --> REORDER
+    REORDER --> RESPONSE
+    RESPONSE --> API
+    API --> USER
+```
+
+---
+
+# 🔬 MACHINE LEARNING PIPELINE
+
+```mermaid
+flowchart LR
+
+    RAW["Raw Sales Data"] --> CLEAN["Data Loading"]
+    CLEAN --> CAL["Calendar Features"]
+    CAL --> BUSINESS["Business Features"]
+    BUSINESS --> HISTORY["Historical Demand Features"]
+    HISTORY --> SPLIT["Time-Based Split"]
+    SPLIT --> PREP["Preprocessing"]
+    PREP --> TRAIN["Random Forest Training"]
+    TRAIN --> PREDICT["Prediction"]
+    PREDICT --> METRICS["Evaluation"]
+
+    style RAW fill:#111827,color:#F9FAFB
+    style CLEAN fill:#111827,color:#F9FAFB
+    style CAL fill:#111827,color:#F9FAFB
+    style BUSINESS fill:#111827,color:#F9FAFB
+    style HISTORY fill:#111827,color:#F9FAFB
+    style SPLIT fill:#111827,color:#F9FAFB
+    style PREP fill:#111827,color:#F9FAFB
+    style TRAIN fill:#111827,color:#F9FAFB
+    style PREDICT fill:#111827,color:#F9FAFB
+    style METRICS fill:#111827,color:#F9FAFB
+```
+
+---
+
+# 🧩 FEATURE ENGINEERING
+
+NEXUS generates multiple feature groups from historical sales.
+
+### 📅 Calendar Intelligence
+
+```text
 day_of_week
-
 day_of_month
-
 month
+```
 
-Business Features
+### 💰 Business Intelligence
 
+```text
 revenue_per_unit
-
 units_per_customer
+```
 
-Historical Demand Features
+### 📈 Historical Demand Intelligence
 
+```text
 lag_1
-
 lag_7
-
 rolling_mean_7
-
 rolling_mean_30
+```
 
-Historical features use shifted observations so the current target is not included in its own forecasting features.
+The historical features are designed to avoid target leakage.
 
-🔮 02 — Demand Forecasting
-
-The forecasting pipeline:
-
-Loads the sales dataset.
-
-Creates demand features.
-
-Removes rows without required historical features.
-
-Sorts observations chronologically.
-
-Uses an 80/20 chronological train/test split.
-
-One-hot encodes product_id.
-
-Trains a RandomForestRegressor with 200 trees.
-
-Evaluates using MAE and RMSE.
-
-Produces a prediction range from individual tree predictions.
-
-Forecasting Flow
-
-flowchart TD
-
-    A["📊 Sales Dataset"] --> B["🧩 Feature Engineering"]
-    B --> C["🧹 Remove Invalid Historical Rows"]
-    C --> D["📅 Chronological Sorting"]
-    D --> E["✂️ 80/20 Time Split"]
-    E --> F["🏷️ One-Hot Product Encoding"]
-    F --> G["🌲 Random Forest"]
-    G --> H["🔮 Demand Prediction"]
-    G --> I["📈 Tree Prediction Distribution"]
-    I --> J["Forecast Range"]
-
-📦 03 — Inventory Intelligence
-
-The inventory service evaluates current inventory against predicted demand.
-
-It returns:
-
-⚠️ Inventory risk level
-
-📦 Current inventory
-
-🔁 Recommended reorder quantity
-
-Decision Flow
-
+```mermaid
 flowchart LR
 
-    A["🔮 Predicted Demand"] --> C["📦 Inventory Analysis"]
-    B["📦 Current Inventory"] --> C
+    T["Current Day<br/>Target"] 
 
-    C --> D["⚠️ Risk Classification"]
-    C --> E["🔁 Reorder Recommendation"]
+    D1["Previous Day"]
+    D7["Previous 7 Days"]
+    D30["Previous 30 Days"]
 
-    D --> F["🚀 API Response"]
-    E --> F
+    D1 --> L1["lag_1"]
+    D7 --> L7["lag_7"]
+    D7 --> R7["rolling_mean_7"]
+    D30 --> R30["rolling_mean_30"]
 
-🧬 System Architecture
+    L1 --> T
+    L7 --> T
+    R7 --> T
+    R30 --> T
+```
 
+> Historical demand information is shifted before rolling calculations so the model does not use the current target value as an input.
+
+---
+
+# 🧠 FORECASTING ENGINE
+
+NEXUS currently uses:
+
+```text
+Algorithm      → RandomForestRegressor
+Trees          → 200
+Random State   → 42
+Parallel Jobs  → -1
+```
+
+The model receives:
+
+```text
+┌──────────────────────────────────────┐
+│          FORECAST FEATURES           │
+├──────────────────────────────────────┤
+│ day_of_week                         │
+│ day_of_month                        │
+│ month                               │
+│ revenue_per_unit                    │
+│ units_per_customer                  │
+│ lag_1                               │
+│ lag_7                               │
+│ rolling_mean_7                      │
+│ rolling_mean_30                     │
+│ product_id                          │
+└──────────────────────────────────────┘
+                  │
+                  ▼
+        ┌──────────────────┐
+        │ Random Forest    │
+        │ 200 Estimators   │
+        └──────────────────┘
+                  │
+                  ▼
+        ┌──────────────────┐
+        │ Demand Forecast  │
+        └──────────────────┘
+```
+
+---
+
+# 📊 MODEL PERFORMANCE
+
+Current evaluation:
+
+| Metric           |    Result |
+| ---------------- | --------: |
+| Training Samples | **5,360** |
+| Testing Samples  | **1,340** |
+| MAE              |  **4.64** |
+| RMSE             |  **6.34** |
+| Estimators       |   **200** |
+
+### 🎯 Interpretation
+
+```text
+Average Absolute Error
+        ↓
+       4.64 units
+
+Root Mean Squared Error
+        ↓
+       6.34 units
+```
+
+The model is currently producing a relatively low forecasting error against the generated demand dataset.
+
+---
+
+# 🎯 FORECAST UNCERTAINTY
+
+NEXUS does not return only a single prediction.
+
+Each Random Forest tree generates an individual prediction:
+
+```text
+Tree 01 ────────┐
+Tree 02 ────────┤
+Tree 03 ────────┤
+Tree 04 ────────┤
+      ...       ├──► Prediction Distribution
+Tree 199 ───────┤
+Tree 200 ───────┘
+```
+
+The system calculates:
+
+```text
+Prediction
+     │
+     ├── Lower Bound → 10th percentile
+     │
+     └── Upper Bound → 90th percentile
+```
+
+This provides an uncertainty range rather than presenting the forecast as an absolute certainty.
+
+---
+
+# 📦 INVENTORY INTELLIGENCE
+
+The forecasting engine feeds directly into the inventory decision engine.
+
+```mermaid
 flowchart TD
 
-    A["📊 Historical Sales Data"] --> B["📥 Data Loading Layer"]
+    DEMAND["📈 Predicted Demand"]
+    STOCK["📦 Current Inventory"]
 
-    B --> C["🧩 Demand Feature Engineering"]
+    DEMAND --> COMPARE{"Compare Inventory<br/>vs Demand"}
+    STOCK --> COMPARE
 
-    C --> D["📅 Calendar Features"]
-    C --> E["📈 Historical Demand Features"]
-    C --> F["💼 Business Features"]
+    COMPARE -->|"Inventory < Demand"| HIGH["🔴 HIGH RISK"]
+    COMPARE -->|"Inventory < 1.2 × Demand"| MEDIUM["🟠 MEDIUM RISK"]
+    COMPARE -->|"Inventory ≥ 1.2 × Demand"| LOW["🟢 LOW RISK"]
 
-    D --> G["🧠 Forecast Model"]
-    E --> G
-    F --> G
+    HIGH --> REORDER["🔄 Reorder Quantity"]
+    MEDIUM --> REORDER
+    LOW --> NOREORDER["✅ No Reorder Required"]
+```
 
-    G --> H["🌲 Random Forest"]
+### Risk Logic
 
-    H --> I["🔮 Demand Prediction"]
-    H --> J["📈 Forecast Range"]
+```text
+IF inventory < predicted demand
+        → HIGH
 
-    I --> K["📦 Inventory Analysis"]
-    J --> K
+ELSE IF inventory < predicted demand × 1.2
+        → MEDIUM
 
-    K --> L["⚠️ Inventory Risk"]
-    K --> M["🔁 Reorder Quantity"]
+ELSE
+        → LOW
+```
 
-    L --> N["🚀 FastAPI"]
-    M --> N
+### Reorder Logic
 
-🔄 End-to-End Intelligence Pipeline
+```text
+reorder_quantity =
+max(0, predicted_demand - current_inventory)
+```
 
-<div align="center">
+The system guarantees that the recommended reorder quantity can never become negative.
 
-<img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=17&duration=1800&pause=500&color=00D084&center=true&vCenter=true&width=1000&lines=%5B01%5D+LOAD+SALES+DATA;%5B02%5D+BUILD+HISTORICAL+FEATURES;%5B03%5D+PROTECT+AGAINST+TARGET+LEAKAGE;%5B04%5D+TRAIN+RANDOM+FOREST;%5B05%5D+GENERATE+DEMAND+FORECAST;%5B06%5D+ESTIMATE+FORECAST+RANGE;%5B07%5D+ANALYZE+INVENTORY;%5B08%5D+RETURN+DECISION+SUPPORT"/>
+---
 
-</div>
+# 🚀 FASTAPI SERVICE
 
-🛡️ Leakage-Safe Forecasting
+NEXUS exposes its forecasting intelligence through a REST API.
 
-Forecasting systems are especially sensitive to target leakage.
+## API Endpoints
 
-NEXUS avoids using the current day's demand when constructing historical demand features.
+| Method | Endpoint            | Purpose                              |
+| ------ | ------------------- | ------------------------------------ |
+| `GET`  | `/`                 | API status                           |
+| `GET`  | `/health`           | Health check                         |
+| `GET`  | `/inventory/status` | Inventory service status             |
+| `POST` | `/forecast`         | Generate demand + inventory forecast |
 
-Feature
+---
 
-Historical Information Used
+# 📥 FORECAST REQUEST
 
-lag_1
+```json
+{
+  "product_id": "P005",
+  "day_of_week": 2,
+  "day_of_month": 15,
+  "month": 8,
+  "revenue_per_unit": 25.5,
+  "units_per_customer": 2.1,
+  "lag_1": 21,
+  "lag_7": 23,
+  "rolling_mean_7": 22,
+  "rolling_mean_30": 21.5,
+  "current_inventory": 20
+}
+```
 
-Previous observation
+---
 
-lag_7
+# 📤 FORECAST RESPONSE
 
-Observation seven periods earlier
+```json
+{
+  "product_id": "P005",
+  "predicted_units_sold": 22.48,
+  "forecast_lower": 20.12,
+  "forecast_upper": 24.96,
+  "forecast_type": "demand_forecast",
+  "model": "Random Forest",
+  "inventory_risk": "HIGH",
+  "current_inventory": 20,
+  "recommended_reorder_quantity": 2
+}
+```
 
-rolling_mean_7
+---
 
-Previous seven observations
+# 🧪 TESTING SYSTEM
 
-rolling_mean_30
+NEXUS currently contains **18 automated tests**.
 
-Previous thirty observations
-
-The rolling calculations use a shift before calculating the rolling mean.
-
-The model also uses a chronological train/test split rather than randomly mixing historical and future observations.
-
-Why this matters
-
+```mermaid
 flowchart LR
 
-    A["Historical Observations"] --> B["Shift"]
-    B --> C["Rolling Features"]
-    C --> D["Current Target"]
+    API["🌐 API Tests<br/>7"]
+    MODEL["🧠 Forecast Model Tests<br/>3"]
+    FEATURES["⚙️ Demand Feature Tests<br/>3"]
+    INVENTORY["📦 Inventory Tests<br/>5"]
 
-    E["Current Target"] -.->|"Not used as input"| C
+    API --> TOTAL["18 TESTS"]
+    MODEL --> TOTAL
+    FEATURES --> TOTAL
+    INVENTORY --> TOTAL
 
-This helps preserve the temporal structure required for realistic forecasting evaluation.
+    TOTAL --> RESULT["✅ 18 PASSED"]
+```
 
-🧩 Modular Project Architecture
+### Test Coverage
 
+| Area              |  Tests |
+| ----------------- | -----: |
+| Forecast API      |      7 |
+| Forecast Model    |      3 |
+| Demand Features   |      3 |
+| Inventory Service |      5 |
+| **Total**         | **18** |
+
+Latest test result:
+
+```text
+18 passed
+1 warning
+0 failures
+```
+
+The remaining warning is related to the current `httpx` / Starlette `TestClient` deprecation path and does not cause test failure.
+
+---
+
+# 🗂️ PROJECT STRUCTURE
+
+```text
 nexus-supply-chain-intelligence/
 │
 ├── app/
@@ -337,11 +460,6 @@ nexus-supply-chain-intelligence/
 ├── config/
 │   ├── __init__.py
 │   └── settings.py
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── sales.csv
 │
 ├── models/
 │   ├── __init__.py
@@ -366,611 +484,322 @@ nexus-supply-chain-intelligence/
 │   ├── test_forecast_model.py
 │   └── test_inventory_service.py
 │
+├── data/
+│   └── sales.csv
+│
 ├── main.py
 ├── requirements.txt
 └── README.md
-
-🧠 Module Intelligence Map
-
-Module
-
-Responsibility
-
-data_loader.py
-
-Load sales data
-
-demand_analysis.py
-
-Analyze demand patterns
-
-demand_features.py
-
-Build forecasting features
-
-forecast_model.py
-
-Train and evaluate the forecasting model
-
-generate_dataset.py
-
-Generate the current sales dataset
-
-inventory_service.py
-
-Inventory risk and reorder analysis
-
-sales_service.py
-
-Sales-related service logic
-
-forecast_api.py
-
-FastAPI forecasting service
-
-models/
-
-Application data models
-
-tests/
-
-Automated unit and API tests
-
-🏗️ Engineering Design
-
-NEXUS separates the major responsibilities of the system into dedicated layers.
-
-flowchart TD
-
-    A["🚀 API Layer"] --> B["⚙️ Service Layer"]
-
-    B --> C["📊 Data Layer"]
-    B --> D["🧩 Feature Layer"]
-    B --> E["🧠 Forecast Layer"]
-    B --> F["📦 Inventory Layer"]
-
-    C --> D
-    D --> E
-    E --> F
-
-    F --> G["📤 Decision Support Response"]
-
-This separation provides:
-
-Cleaner responsibilities
-
-Easier testing
-
-Reusable forecasting components
-
-Better maintainability
-
-Clear API boundaries
-
-Easier future productionization
-
-🌲 Forecasting Engine
-
-The current model is:
-
-RandomForestRegressor(n_estimators=200)
-
-The model receives:
-
-Calendar features
-
-Business features
-
-Historical demand features
-
-One-hot encoded product_id
-
-and predicts:
-
-Expected units sold
-
-Forecast Range
-
-The system also derives a prediction range from the distribution of individual Random Forest tree predictions.
-
-flowchart LR
-
-    A["Input Features"] --> B["🌲 Tree 1"]
-    A --> C["🌲 Tree 2"]
-    A --> D["🌲 ..."]
-    A --> E["🌲 Tree 200"]
-
-    B --> F["Prediction Distribution"]
-    C --> F
-    D --> F
-    E --> F
-
-    F --> G["🔮 Forecast"]
-    F --> H["📈 Forecast Range"]
-
-📊 Model Performance
-
-Current local evaluation on the generated dataset:
-
-Metric
-
-Current Result
-
-Training samples
-
-5,360
-
-Testing samples
-
-1,340
-
-MAE
-
-Approximately 4.6
-
-RMSE
-
-Approximately 6.3
-
-These metrics are based on the current generated dataset and can change when the dataset or feature pipeline changes.
-
-<div align="center">
-
-<img src="https://img.shields.io/badge/TRAIN-5360%20SAMPLES-00E5C7?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/TEST-1340%20SAMPLES-00A6A6?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/MAE-%7E4.6-00D084?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/RMSE-%7E6.3-00D084?style=for-the-badge&labelColor=07111F"/>
-
-</div>
-
-📦 Dataset
-
-The current generated dataset contains:
-
-Property
-
-Value
-
-Rows
-
-7,300
-
-Products
-
-20
-
-Frequency
-
-Daily
-
-Start
-
-January 1, 2025
-
-End
-
-December 31, 2025
-
-Base Columns
-
-product_id
-sale_date
-units_sold
-revenue
-customer_count
-
-🌐 FastAPI Intelligence Layer
-
-NEXUS exposes its forecasting and inventory capabilities through FastAPI.
-
-Endpoints
-
-Method
-
-Endpoint
-
-Purpose
-
-GET
-
-/
-
-Service information
-
-GET
-
-/health
-
-Health check
-
-GET
-
-/inventory/status
-
-Inventory service status
-
-POST
-
-/forecast
-
-Demand forecast + inventory analysis
-
-🚀 API Request
-
-POST /forecast
-
-{
-  "product_id": "P001",
-  "day_of_week": 2,
-  "day_of_month": 15,
-  "month": 8,
-  "revenue_per_unit": 400,
-  "units_per_customer": 1.2,
-  "lag_1": 30,
-  "lag_7": 28,
-  "rolling_mean_7": 29.5,
-  "rolling_mean_30": 30.1,
-  "current_inventory": 100
-}
-
-Response Structure
-
-{
-  "product_id": "P001",
-  "predicted_units_sold": 30.12,
-  "forecast_lower": 25.4,
-  "forecast_upper": 35.1,
-  "forecast_type": "demand_forecast",
-  "model": "Random Forest",
-  "inventory_risk": "low",
-  "current_inventory": 100,
-  "recommended_reorder_quantity": 0
-}
-
-Actual forecast values depend on the trained model and input data.
-
-🧪 Testing
-
-Run the complete test suite:
-
-pytest -v
-
-Current test result:
-
-18 passed, 1 warning
-
-Test Coverage
-
-Demand feature creation
-
-Lag feature correctness
-
-Historical-only rolling features
-
-Forecast data preparation
-
-Model training
-
-Prediction range generation
-
-API endpoints
-
-API validation
-
-Inventory risk classification
-
-Reorder quantity logic
-
-⚠️ Known Warning
-
-The test suite currently reports a Starlette deprecation warning related to the httpx integration used by the FastAPI test client.
-
-The warning does not currently cause test failures:
-
-18 passed, 1 warning
-
-This should be addressed during dependency maintenance.
-
-🛠️ Technology Stack
-
-<div align="center">
-
-<img src="https://skillicons.dev/icons?i=python,fastapi,sklearn,pandas,numpy,pytest,git,github"/>
-
-<br><br>
-
-<img src="https://img.shields.io/badge/Python-3.11-00E5C7?style=for-the-badge&logo=python&logoColor=white&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/FastAPI-API-00A6A6?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/Scikit--Learn-ML-00E5C7?style=for-the-badge&logo=scikit-learn&logoColor=white&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/Pandas-DATA-00A6A6?style=for-the-badge&logo=pandas&logoColor=white&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/NumPy-COMPUTING-00E5C7?style=for-the-badge&logo=numpy&logoColor=white&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/Pytest-TESTING-00D084?style=for-the-badge&logo=pytest&logoColor=white&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/Uvicorn-SERVER-00A6A6?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/Git-GITHUB-00E5C7?style=for-the-badge&logo=git&logoColor=white&labelColor=07111F"/>
-
-</div>
-
-⚙️ Installation
-
-01 — Clone
-
+```
+
+---
+
+# 🔄 END-TO-END PIPELINE
+
+```mermaid
+sequenceDiagram
+
+    participant U as 👤 User
+    participant A as 🚀 FastAPI
+    participant F as ⚙️ Feature Engine
+    participant M as 🧠 ML Model
+    participant I as 📦 Inventory Engine
+
+    U->>A: POST /forecast
+    A->>F: Prepare forecast features
+    F->>M: Transform input
+    M->>M: Generate prediction
+    M->>A: Prediction + range
+    A->>I: Analyze inventory
+    I->>I: Calculate risk
+    I->>I: Calculate reorder quantity
+    I->>A: Inventory recommendation
+    A->>U: Complete forecast response
+```
+
+---
+
+# 🛠️ TECHNOLOGY STACK
+
+```text
+┌───────────────────────────────────────────┐
+│                NEXUS STACK                │
+├───────────────────────────────────────────┤
+│ Python                                    │
+│ Pandas                                    │
+│ Scikit-learn                              │
+│ Random Forest                             │
+│ FastAPI                                   │
+│ Pydantic                                  │
+│ Pytest                                    │
+│ PowerShell / PyCharm                      │
+│ Git / GitHub                              │
+└───────────────────────────────────────────┘
+```
+
+---
+
+# ⚡ QUICK START
+
+## 1. Clone
+
+```bash
 git clone https://github.com/shubhamkardel-ai/nexus-supply-chain-intelligence.git
 cd nexus-supply-chain-intelligence
+```
 
-02 — Virtual Environment
+## 2. Create virtual environment
 
-Windows PowerShell
-
+```powershell
 python -m venv .venv311
-.\.venv311\Scripts\Activate.ps1
+```
 
-Install Dependencies
+## 3. Activate
 
+```powershell
+.venv311\Scripts\Activate.ps1
+```
+
+## 4. Install dependencies
+
+```powershell
 pip install -r requirements.txt
+```
 
-🗃️ Generate the Dataset
+## 5. Generate dataset
 
-If the dataset needs to be regenerated:
-
+```powershell
 python -m services.generate_dataset
+```
 
-Expected output:
+## 6. Train and evaluate the model
 
-Dataset generated successfully!
-Rows: 7300
-Products: 20
-Date range: 2025-01-01 → 2025-12-31
-
-🔮 Run the Forecasting Model
-
+```powershell
 python -m services.forecast_model
+```
 
-Example output:
+## 7. Run tests
 
-Demand Forecasting Model
-------------------------
-Training samples: 5360
-Testing samples: 1340
-MAE: 4.64
-RMSE: 6.34
+```powershell
+pytest -v
+```
 
-🚀 Run the API
+## 8. Start the API
 
-Start FastAPI:
-
+```powershell
 uvicorn app.forecast_api:app --reload
+```
 
-Local service:
+---
 
-http://127.0.0.1:8000
+# 🌐 API WORKFLOW
 
-Interactive documentation:
+```text
+                 ┌───────────────────┐
+                 │     CLIENT        │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │     FASTAPI       │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │ FEATURE ENGINE    │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │ RANDOM FOREST     │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │ DEMAND FORECAST   │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │ INVENTORY RISK    │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │ REORDER ACTION    │
+                 └───────────────────┘
+```
 
-http://127.0.0.1:8000/docs
+---
 
-🧪 Development Workflow
+# 📈 CURRENT PROJECT MILESTONE
 
-NEXUS follows a test-first, checkpoint-based development workflow.
+```text
+DATA FOUNDATION              ████████████████████ 100%
 
+FEATURE ENGINEERING          ████████████████████ 100%
+
+FORECASTING MODEL            ████████████████████ 100%
+
+UNCERTAINTY RANGE            ████████████████████ 100%
+
+INVENTORY INTELLIGENCE       ████████████████████ 100%
+
+API LAYER                    ████████████████████ 100%
+
+AUTOMATED TESTING            ████████████████████ 100%
+
+DOCUMENTATION                ████████████████████ 100%
+
+ADVANCED ANALYTICS           ███████░░░░░░░░░░░░░ 35%
+
+PRODUCTION DEPLOYMENT        ██░░░░░░░░░░░░░░░░░░ 10%
+```
+
+---
+
+# 🧭 ROADMAP
+
+```mermaid
 flowchart LR
 
-    A["💻 Implement"] --> B["🧪 Run Tests"]
-    B --> C["🔍 Inspect"]
-    C --> D["🛠️ Fix / Improve"]
-    D --> E["🧪 Test Again"]
-    E --> F["📦 Commit"]
-    F --> G["🚀 Push"]
-    G --> A
+    A["✅ Data Pipeline"] --> B["✅ Feature Engineering"]
+    B --> C["✅ Forecasting"]
+    C --> D["✅ Prediction Range"]
+    D --> E["✅ Inventory Intelligence"]
+    E --> F["✅ REST API"]
+    F --> G["🔜 Dashboard"]
+    G --> H["🔜 Database"]
+    H --> I["🔜 Model Monitoring"]
+    I --> J["🔜 Cloud Deployment"]
+```
 
-Git checkpoints are created after meaningful completed stages so the repository remains recoverable and progress stays traceable.
+### Next Engineering Targets
 
-📈 Current System Status
+```text
+🔜 Interactive supply-chain dashboard
 
-<div align="center">
+🔜 Persistent database integration
 
-<img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=17&duration=1700&pause=450&color=00D084&center=true&vCenter=true&width=1000&lines=%5BOK%5D+DATASET+GENERATION;%5BOK%5D+DATA+LOADING;%5BOK%5D+DEMAND+ANALYSIS;%5BOK%5D+FEATURE+ENGINEERING;%5BOK%5D+LEAKAGE+PROTECTION;%5BOK%5D+RANDOM+FOREST+FORECASTING;%5BOK%5D+FORECAST+RANGE;%5BOK%5D+INVENTORY+ANALYSIS;%5BOK%5D+FASTAPI+SERVICE;%5BOK%5D+AUTOMATED+TESTING;%5BOK%5D+GITHUB+CHECKPOINTS"/>
+🔜 Historical forecast tracking
 
-<br><br>
+🔜 Model performance monitoring
 
-<img src="https://img.shields.io/badge/DATA-ONLINE-00D084?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/ML-ONLINE-00E5C7?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/API-ONLINE-00A6A6?style=for-the-badge&labelColor=07111F"/>
-<img src="https://img.shields.io/badge/TESTS-18%20PASSED-00D084?style=for-the-badge&labelColor=07111F"/>
+🔜 Automated retraining pipeline
 
-</div>
+🔜 Supplier intelligence
 
-🔮 Future Evolution
+🔜 Lead-time aware replenishment
 
-The current implementation is a completed portfolio-stage system. Future development opportunities include:
+🔜 Safety-stock optimization
 
-🟣 Forecasting Intelligence
+🔜 Docker deployment
 
-Model persistence instead of training on API startup
+🔜 Cloud deployment
+```
 
-Configurable forecast horizons
+---
 
-Feature importance reporting
+# 🔐 ENGINEERING PRINCIPLES
 
-Historical forecast-vs-actual visualization
+NEXUS is being developed around several core principles:
 
-🔵 Supply Chain Intelligence
+```text
+                    ┌──────────────────────┐
+                    │     NEXUS CORE       │
+                    └──────────┬───────────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          ▼                    ▼                    ▼
+    DATA QUALITY         NO LEAKAGE          TESTABILITY
+          │                    │                    │
+          └────────────────────┼────────────────────┘
+                               │
+                               ▼
+                       ACTIONABLE OUTPUT
+```
 
-Supplier lead-time modeling
+### Data Quality
 
-Safety-stock calculations
+Input data is structured and transformed before entering the model.
 
-More advanced reorder policies
+### Leakage Prevention
 
-Broader inventory optimization
+Historical features are shifted so future/target information does not leak into model inputs.
 
-🟢 Production Engineering
+### Testability
 
-Docker support
+Core API, model, feature-engineering, and inventory logic are independently tested.
 
-CI/CD with GitHub Actions
+### Actionability
 
-Structured API error handling
+The system goes beyond prediction by converting demand forecasts into inventory decisions.
 
-Automated retraining workflow
+---
 
-Production monitoring
+# 🎯 PROJECT VALUE
 
-Model performance tracking
+NEXUS connects three traditionally separate systems:
 
-These are future development opportunities, not claims about the current implementation.
+```text
+       MACHINE LEARNING
+              │
+              ▼
+       DEMAND FORECAST
+              │
+              ▼
+       INVENTORY ANALYSIS
+              │
+              ▼
+       BUSINESS DECISION
+```
 
-🌐 Future Architecture
+The goal is not simply:
 
-flowchart TD
+> "How many units might we sell?"
 
-    A["🏢 Supply Chain User"] --> B["🌐 API / Application"]
+The goal is:
 
-    B --> C["📊 Data Layer"]
+```text
+"What are we likely to sell,
+what inventory risk does that create,
+and how much should we reorder?"
+```
 
-    C --> D["🧩 Feature Intelligence"]
+---
 
-    D --> E["🧠 Forecasting Models"]
+# 👨‍💻 DEVELOPMENT
 
-    E --> F["📈 Forecast Monitoring"]
+Built as an AI/ML engineering project with a focus on:
 
-    F --> G["📦 Inventory Optimization"]
+```text
+Machine Learning
+        +
+Feature Engineering
+        +
+Forecasting
+        +
+Backend API Engineering
+        +
+Inventory Intelligence
+        +
+Automated Testing
+```
 
-    G --> H["🔁 Replenishment Intelligence"]
+---
 
-    H --> I["📊 Decision Dashboard"]
+# 📜 LICENSE
 
-    I --> J["📡 Production Monitoring"]
+This project is currently intended for educational, portfolio, and research purposes.
 
-🧠 Engineering Lessons
+---
 
-Building NEXUS provided practical experience across several AI engineering areas.
+<p align="center">
 
-<div align="center">
+<strong>⚡ NEXUS SUPPLY CHAIN INTELLIGENCE</strong>
 
-<table width="100%" cellspacing="0" cellpadding="20">
-<tr>
-<td align="center">
+<br />
 
-🐍 PYTHON
+<sub>From historical demand → intelligent forecast → inventory decision.</sub>
 
-Modular application development and service architecture.
-
-</td>
-<td align="center">
-
-📊 DATA
-
-Historical demand analysis and feature engineering.
-
-</td>
-<td align="center">
-
-🧠 MACHINE LEARNING
-
-Random Forest regression and model evaluation.
-
-</td>
-</tr>
-<tr>
-<td align="center">
-
-🛡️ DATA LEAKAGE
-
-Temporal feature construction and chronological evaluation.
-
-</td>
-<td align="center">
-
-📦 INVENTORY
-
-Risk classification and reorder decision logic.
-
-</td>
-<td align="center">
-
-🚀 API ENGINEERING
-
-FastAPI service design and validation.
-
-</td>
-</tr>
-</table>
-
-</div>
-
-📌 Completed Capabilities
-
-✓ Sales Dataset Generation
-✓ Data Loading
-✓ Demand Analysis
-✓ Leakage-Safe Feature Engineering
-✓ Random Forest Demand Forecasting
-✓ Forecast Prediction Range
-✓ Inventory Risk Analysis
-✓ Reorder Quantity Recommendation
-✓ FastAPI Forecasting Service
-✓ API Validation
-✓ Automated Unit/API Tests
-✓ GitHub Repository
-✓ Checkpoint-Based Development
-
-🤝 Contributing
-
-Contributions, ideas, improvements and suggestions are welcome.
-
-git checkout -b feature/your-feature
-
-git add .
-
-git commit -m "feat: add your feature"
-
-git push origin feature/your-feature
-
-Then open a Pull Request.
-
-📜 License
-
-This project is currently a personal / portfolio project.
-
-Add a formal open-source license before distributing it as an open-source package.
-
-👨‍💻 Author
-
-<div align="center">
-
-<img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=25&duration=2400&pause=700&color=00E5C7&center=true&vCenter=true&width=900&lines=SHUBHAM+KARDEL;AI%2FML+ENGINEER;PYTHON+DEVELOPER;INTELLIGENT+SYSTEMS+BUILDER"/>
-
-<br><br>
-
-<a href="https://github.com/shubhamkardel-ai">
-<img src="https://img.shields.io/badge/GitHub-shubhamkardel--ai-181717?style=for-the-badge&logo=github&logoColor=white"/>
-</a>
-
-<br><br>
-
-🚀 Building intelligent systems — one project at a time.
-
-</div>
-
-🌟 NEXUS
-
-<div align="center">
-
-<img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=21&duration=2300&pause=700&color=00E5C7&center=true&vCenter=true&width=1000&lines=OBSERVE+%7C+FORECAST+%7C+ANALYZE+%7C+DECIDE;TURNING+DEMAND+DATA+INTO+SUPPLY+CHAIN+INTELLIGENCE;FROM+HISTORICAL+SALES+TO+ACTIONABLE+DECISIONS;NEXUS+SUPPLY+CHAIN+INTELLIGENCE+ONLINE"/>
-
-<br><br>
-
-Forecast demand.
-Understand inventory risk.
-Recommend replenishment.
-Build better supply-chain decisions.
-
-<br><br>
-
-⭐ If you find NEXUS useful, consider giving the repository a star. ⭐
-
-<br><br>
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:00E5C7,25:00A6A6,50:123B55,75:0B2239,100:07111F&height=170&section=footer&animation=fadeIn" width="100%"/>
-
-</div>
+</p>
