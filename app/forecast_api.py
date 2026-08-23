@@ -32,6 +32,17 @@ class ForecastRequest(BaseModel):
     rolling_mean_30: float
     current_inventory: int
 
+class ForecastResponse(BaseModel):
+    product_id: str
+    predicted_units_sold: float
+    forecast_lower: float
+    forecast_upper: float
+    forecast_type: str
+    model: str
+    inventory_risk: str
+    current_inventory: int
+    recommended_reorder_quantity: int
+
 
 # Train the model when the API starts
 file_path = Path("data/sales.csv")
@@ -61,7 +72,7 @@ def inventory_status():
         "status": "active",
     }
 
-@app.post("/forecast")
+@app.post("/forecast", response_model=ForecastResponse)
 def forecast(request: ForecastRequest):
     input_data = pd.DataFrame(
         [
