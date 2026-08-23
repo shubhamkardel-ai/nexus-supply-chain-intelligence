@@ -23,12 +23,20 @@ def create_demand_features(file_path: Path) -> pd.DataFrame:
     dataframe["month"] = dataframe["sale_date"].dt.month
 
     # Business features
+    # Use historical information only to avoid target leakage.
+
     dataframe["revenue_per_unit"] = (
-        dataframe["revenue"] / dataframe["units_sold"]
+        dataframe.groupby("product_id")["revenue"]
+        .transform(
+            lambda series: series.shift(1).rolling(7).mean()
+        )
     )
 
     dataframe["units_per_customer"] = (
-        dataframe["units_sold"] / dataframe["customer_count"]
+        dataframe.groupby("product_id")["customer_count"]
+        .transform(
+            lambda series: series.shift(1).rolling(7).mean()
+        )
     )
 
     # Historical demand features
