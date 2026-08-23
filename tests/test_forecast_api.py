@@ -54,3 +54,22 @@ def test_forecast():
     assert "forecast_upper" in data
     assert "inventory_risk" in data
     assert "recommended_reorder_quantity" in data
+
+def test_forecast_rejects_negative_inventory():
+    payload = {
+        "product_id": "P005",
+        "day_of_week": 2,
+        "day_of_month": 15,
+        "month": 8,
+        "revenue_per_unit": 25.5,
+        "units_per_customer": 2.1,
+        "lag_1": 21,
+        "lag_7": 23,
+        "rolling_mean_7": 22,
+        "rolling_mean_30": 21.5,
+        "current_inventory": -10,
+    }
+
+    response = client.post("/forecast", json=payload)
+
+    assert response.status_code == 422

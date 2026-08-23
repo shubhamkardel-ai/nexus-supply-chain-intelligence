@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from services.inventory_service import calculate_inventory_risk
 
@@ -20,17 +20,17 @@ app = FastAPI(
 
 
 class ForecastRequest(BaseModel):
-    product_id: str
-    day_of_week: int
-    day_of_month: int
-    month: int
-    revenue_per_unit: float
-    units_per_customer: float
-    lag_1: float
-    lag_7: float
-    rolling_mean_7: float
-    rolling_mean_30: float
-    current_inventory: int
+    product_id: str = Field(..., min_length=1)
+    day_of_week: int = Field(..., ge=0, le=6)
+    day_of_month: int = Field(..., ge=1, le=31)
+    month: int = Field(..., ge=1, le=12)
+    revenue_per_unit: float = Field(..., ge=0)
+    units_per_customer: float = Field(..., ge=0)
+    lag_1: float = Field(..., ge=0)
+    lag_7: float = Field(..., ge=0)
+    rolling_mean_7: float = Field(..., ge=0)
+    rolling_mean_30: float = Field(..., ge=0)
+    current_inventory: int = Field(..., ge=0)
 
 class ForecastResponse(BaseModel):
     product_id: str
