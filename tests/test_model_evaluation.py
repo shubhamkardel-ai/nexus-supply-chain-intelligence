@@ -12,6 +12,7 @@ def test_evaluate_model_returns_metrics():
 
     assert "mae" in metrics
     assert "rmse" in metrics
+    assert "mape" in metrics
 
 
 def test_evaluate_model_metrics_are_non_negative():
@@ -25,3 +26,17 @@ def test_evaluate_model_metrics_are_non_negative():
 
     assert metrics["mae"] >= 0
     assert metrics["rmse"] >= 0
+    assert metrics["mape"] >= 0
+
+
+def test_evaluate_model_mape_is_percentage():
+    y_true = [100, 200, 300]
+    predictions = [90, 220, 330]
+
+    metrics = evaluate_model(
+        y_true,
+        predictions,
+    )
+
+    assert metrics["mape"] >= 0
+    assert metrics["mape"] <= 100

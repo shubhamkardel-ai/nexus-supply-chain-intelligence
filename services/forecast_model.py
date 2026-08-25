@@ -114,6 +114,7 @@ if __name__ == "__main__":
 
     mae = metrics["mae"]
     rmse = metrics["rmse"]
+    mape = metrics["mape"]
 
     print("Demand Forecasting Model")
     print("------------------------")
@@ -121,3 +122,4 @@ if __name__ == "__main__":
     print(f"Testing samples: {len(X_test)}")
     print(f"MAE: {mae:.2f}")
     print(f"RMSE: {rmse:.2f}")
+    print(f"MAPE: {mape:.2f}%")
