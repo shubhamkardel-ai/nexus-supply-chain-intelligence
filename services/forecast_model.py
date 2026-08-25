@@ -3,11 +3,10 @@ from pathlib import Path
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from sklearn.preprocessing import OneHotEncoder
 
 from services.demand_features import create_demand_features
-
+from services.model_evaluation import evaluate_model
 
 NUMERIC_FEATURES = [
     "day_of_week",
@@ -108,15 +107,13 @@ if __name__ == "__main__":
 
     predictions = model.predict(X_test_encoded)
 
-    mae = mean_absolute_error(
+    metrics = evaluate_model(
         y_test,
         predictions,
     )
 
-    rmse = root_mean_squared_error(
-        y_test,
-        predictions,
-    )
+    mae = metrics["mae"]
+    rmse = metrics["rmse"]
 
     print("Demand Forecasting Model")
     print("------------------------")
