@@ -1,16 +1,18 @@
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from services.inventory_service import calculate_inventory_risk
-
+from services.forecast_features import create_forecast_features
 from services.forecast_model import (
     prepare_data,
     train_model,
     predict_with_range,
 )
+from services.inventory_service import calculate_inventory_risk
+
 
 app = FastAPI(
     title="NEXUS Supply Chain Intelligence",
@@ -21,19 +23,13 @@ app = FastAPI(
 
 class ForecastRequest(BaseModel):
     product_id: str = Field(..., min_length=1)
-    day_of_week: int = Field(..., ge=0, le=6)
-    day_of_month: int = Field(..., ge=1, le=31)
-    month: int = Field(..., ge=1, le=12)
-    revenue_per_unit: float = Field(..., ge=0)
-    units_per_customer: float = Field(..., ge=0)
-    lag_1: float = Field(..., ge=0)
-    lag_7: float = Field(..., ge=0)
-    rolling_mean_7: float = Field(..., ge=0)
-    rolling_mean_30: float = Field(..., ge=0)
+    forecast_date: date
     current_inventory: int = Field(..., ge=0)
+
 
 class ForecastResponse(BaseModel):
     product_id: str
+    forecast_date: date
     predicted_units_sold: float
     forecast_lower: float
     forecast_upper: float
@@ -48,7 +44,11 @@ class ForecastResponse(BaseModel):
 file_path = Path("data/sales.csv")
 
 X_train, X_test, y_train, y_test = prepare_data(file_path)
-model, preprocessor = train_model(X_train, y_train)
+
+model, preprocessor = train_model(
+    X_train,
+    y_train,
+)
 
 
 @app.get("/")
@@ -65,6 +65,7 @@ def health_check():
         "status": "healthy",
     }
 
+
 @app.get("/inventory/status")
 def inventory_status():
     return {
@@ -72,26 +73,16 @@ def inventory_status():
         "status": "active",
     }
 
+
 @app.post("/forecast", response_model=ForecastResponse)
 def forecast(request: ForecastRequest):
-    input_data = pd.DataFrame(
-        [
-            {
-                "product_id": request.product_id,
-                "day_of_week": request.day_of_week,
-                "day_of_month": request.day_of_month,
-                "month": request.month,
-                "revenue_per_unit": request.revenue_per_unit,
-                "units_per_customer": request.units_per_customer,
-                "lag_1": request.lag_1,
-                "lag_7": request.lag_7,
-                "rolling_mean_7": request.rolling_mean_7,
-                "rolling_mean_30": request.rolling_mean_30,
-            }
-        ]
+    features = create_forecast_features(
+        file_path=file_path,
+        product_id=request.product_id,
+        forecast_date=request.forecast_date.isoformat(),
     )
 
-    encoded_data = preprocessor.transform(input_data)
+    encoded_data = preprocessor.transform(features)
 
     prediction, lower_bound, upper_bound = predict_with_range(
         model,
@@ -106,6 +97,7 @@ def forecast(request: ForecastRequest):
 
     return {
         "product_id": request.product_id,
+        "forecast_date": request.forecast_date,
         "predicted_units_sold": round(float(prediction), 2),
         "forecast_lower": round(float(lower_bound), 2),
         "forecast_upper": round(float(upper_bound), 2),

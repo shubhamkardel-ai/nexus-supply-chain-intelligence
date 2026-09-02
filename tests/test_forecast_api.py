@@ -30,15 +30,7 @@ def test_inventory_status():
 def test_forecast():
     payload = {
         "product_id": "P005",
-        "day_of_week": 2,
-        "day_of_month": 15,
-        "month": 8,
-        "revenue_per_unit": 25.5,
-        "units_per_customer": 2.1,
-        "lag_1": 21,
-        "lag_7": 23,
-        "rolling_mean_7": 22,
-        "rolling_mean_30": 21.5,
+        "forecast_date": "2026-01-01",
         "current_inventory": 20,
     }
 
@@ -49,24 +41,21 @@ def test_forecast():
     data = response.json()
 
     assert data["product_id"] == "P005"
+    assert data["forecast_date"] == "2026-01-01"
     assert "predicted_units_sold" in data
     assert "forecast_lower" in data
     assert "forecast_upper" in data
+    assert "forecast_type" in data
+    assert "model" in data
     assert "inventory_risk" in data
+    assert "current_inventory" in data
     assert "recommended_reorder_quantity" in data
+
 
 def test_forecast_rejects_negative_inventory():
     payload = {
         "product_id": "P005",
-        "day_of_week": 2,
-        "day_of_month": 15,
-        "month": 8,
-        "revenue_per_unit": 25.5,
-        "units_per_customer": 2.1,
-        "lag_1": 21,
-        "lag_7": 23,
-        "rolling_mean_7": 22,
-        "rolling_mean_30": 21.5,
+        "forecast_date": "2026-01-01",
         "current_inventory": -10,
     }
 
@@ -74,18 +63,11 @@ def test_forecast_rejects_negative_inventory():
 
     assert response.status_code == 422
 
-def test_forecast_rejects_invalid_month():
+
+def test_forecast_rejects_invalid_date():
     payload = {
         "product_id": "P005",
-        "day_of_week": 2,
-        "day_of_month": 15,
-        "month": 13,
-        "revenue_per_unit": 25.5,
-        "units_per_customer": 2.1,
-        "lag_1": 21,
-        "lag_7": 23,
-        "rolling_mean_7": 22,
-        "rolling_mean_30": 21.5,
+        "forecast_date": "not-a-date",
         "current_inventory": 20,
     }
 
@@ -94,18 +76,10 @@ def test_forecast_rejects_invalid_month():
     assert response.status_code == 422
 
 
-def test_forecast_rejects_invalid_day_of_week():
+def test_forecast_rejects_empty_product_id():
     payload = {
-        "product_id": "P005",
-        "day_of_week": 7,
-        "day_of_month": 15,
-        "month": 8,
-        "revenue_per_unit": 25.5,
-        "units_per_customer": 2.1,
-        "lag_1": 21,
-        "lag_7": 23,
-        "rolling_mean_7": 22,
-        "rolling_mean_30": 21.5,
+        "product_id": "",
+        "forecast_date": "2026-01-01",
         "current_inventory": 20,
     }
 
