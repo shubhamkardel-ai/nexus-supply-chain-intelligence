@@ -107,3 +107,57 @@ def forecast(request: ForecastRequest):
         "current_inventory": inventory_analysis.current_inventory,
         "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
     }
+class BatchForecastItem(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    current_inventory: int = Field(..., ge=0)
+
+
+class BatchForecastRequest(BaseModel):
+    forecast_date: date
+    forecasts: list[BatchForecastItem] = Field(..., min_length=1)
+
+
+class BatchForecastResponse(BaseModel):
+    forecasts: list[ForecastResponse]
+
+
+@app.post("/forecast/batch", response_model=BatchForecastResponse)
+def batch_forecast(request: BatchForecastRequest):
+    results = []
+
+    for item in request.forecasts:
+        features = create_forecast_features(
+            file_path=file_path,
+            product_id=item.product_id,
+            forecast_date=request.forecast_date.isoformat(),
+        )
+
+        encoded_data = preprocessor.transform(features)
+
+        prediction, lower_bound, upper_bound = predict_with_range(
+            model,
+            encoded_data,
+        )
+
+        inventory_analysis = calculate_inventory_risk(
+            product_id=item.product_id,
+            current_inventory=item.current_inventory,
+            predicted_demand=prediction,
+        )
+
+        results.append(
+            {
+                "product_id": item.product_id,
+                "forecast_date": request.forecast_date,
+                "predicted_units_sold": round(float(prediction), 2),
+                "forecast_lower": round(float(lower_bound), 2),
+                "forecast_upper": round(float(upper_bound), 2),
+                "forecast_type": "demand_forecast",
+                "model": "Random Forest",
+                "inventory_risk": inventory_analysis.inventory_risk,
+                "current_inventory": inventory_analysis.current_inventory,
+                "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
+            }
+        )
+
+    return {"forecasts": results}

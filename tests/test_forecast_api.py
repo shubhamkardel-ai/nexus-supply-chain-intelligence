@@ -86,3 +86,34 @@ def test_forecast_rejects_empty_product_id():
     response = client.post("/forecast", json=payload)
 
     assert response.status_code == 422
+def test_batch_forecast():
+    payload = {
+        "forecast_date": "2026-01-01",
+        "forecasts": [
+            {
+                "product_id": "P005",
+                "current_inventory": 20,
+            },
+            {
+                "product_id": "P010",
+                "current_inventory": 100,
+            },
+        ],
+    }
+
+    response = client.post("/forecast/batch", json=payload)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "forecasts" in data
+    assert len(data["forecasts"]) == 2
+
+    for forecast in data["forecasts"]:
+        assert "product_id" in forecast
+        assert "predicted_units_sold" in forecast
+        assert "forecast_lower" in forecast
+        assert "forecast_upper" in forecast
+        assert "inventory_risk" in forecast
+        assert "recommended_reorder_quantity" in forecast
