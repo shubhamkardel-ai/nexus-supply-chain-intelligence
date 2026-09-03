@@ -11,6 +11,7 @@ from services.forecast_model import (
     train_model,
     predict_with_range,
 )
+from services.forecast_report import generate_forecast_report
 from services.inventory_service import calculate_inventory_risk
 
 
@@ -72,6 +73,10 @@ def inventory_status():
         "service": "inventory_management",
         "status": "active",
     }
+
+@app.get("/forecast/report")
+def forecast_report():
+    return generate_forecast_report(file_path)
 
 
 @app.post("/forecast", response_model=ForecastResponse)

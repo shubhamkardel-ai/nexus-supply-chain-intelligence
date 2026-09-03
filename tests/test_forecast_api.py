@@ -101,6 +101,36 @@ def test_batch_forecast():
         ],
     }
 
+    def test_forecast_report():
+        response = client.get("/forecast/report")
+
+        assert response.status_code == 200
+
+        data = response.json()
+
+        assert data["model"] == "Random Forest"
+        assert data["training_samples"] == 5360
+        assert data["testing_samples"] == 1340
+        assert data["trees"] == 200
+        assert data["mae"] >= 0
+        assert data["rmse"] >= 0
+        assert data["mape"] >= 0
+
+    def test_forecast_report():
+        response = client.get("/forecast/report")
+
+        assert response.status_code == 200
+
+        data = response.json()
+
+        assert data["model"] == "Random Forest"
+        assert data["training_samples"] == 5360
+        assert data["testing_samples"] == 1340
+        assert data["trees"] == 200
+        assert data["mae"] >= 0
+        assert data["rmse"] >= 0
+        assert data["mape"] >= 0
+
     response = client.post("/forecast/batch", json=payload)
 
     assert response.status_code == 200
@@ -159,3 +189,18 @@ def test_batch_forecast_rejects_empty_product_id():
     response = client.post("/forecast/batch", json=payload)
 
     assert response.status_code == 422
+
+def test_forecast_report():
+    response = client.get("/forecast/report")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["model"] == "Random Forest"
+    assert data["training_samples"] == 5360
+    assert data["testing_samples"] == 1340
+    assert data["trees"] == 200
+    assert data["mae"] >= 0
+    assert data["rmse"] >= 0
+    assert data["mape"] >= 0
