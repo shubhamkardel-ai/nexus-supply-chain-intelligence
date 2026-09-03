@@ -117,3 +117,45 @@ def test_batch_forecast():
         assert "forecast_upper" in forecast
         assert "inventory_risk" in forecast
         assert "recommended_reorder_quantity" in forecast
+
+def test_batch_forecast_rejects_empty_forecasts():
+    payload = {
+        "forecast_date": "2026-01-01",
+        "forecasts": [],
+    }
+
+    response = client.post("/forecast/batch", json=payload)
+
+    assert response.status_code == 422
+
+
+def test_batch_forecast_rejects_negative_inventory():
+    payload = {
+        "forecast_date": "2026-01-01",
+        "forecasts": [
+            {
+                "product_id": "P005",
+                "current_inventory": -10,
+            },
+        ],
+    }
+
+    response = client.post("/forecast/batch", json=payload)
+
+    assert response.status_code == 422
+
+
+def test_batch_forecast_rejects_empty_product_id():
+    payload = {
+        "forecast_date": "2026-01-01",
+        "forecasts": [
+            {
+                "product_id": "",
+                "current_inventory": 20,
+            },
+        ],
+    }
+
+    response = client.post("/forecast/batch", json=payload)
+
+    assert response.status_code == 422
