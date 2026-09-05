@@ -12,7 +12,11 @@ from services.forecast_model import (
     predict_with_range,
 )
 from services.forecast_report import generate_forecast_report
-from services.inventory_service import calculate_inventory_risk
+
+from services.inventory_service import (
+    calculate_inventory_risk,
+    get_inventory_recommendation,
+)
 
 
 app = FastAPI(
@@ -37,6 +41,7 @@ class ForecastResponse(BaseModel):
     forecast_type: str
     model: str
     inventory_risk: str
+    inventory_recommendation: str
     current_inventory: int
     recommended_reorder_quantity: int
 
@@ -109,6 +114,10 @@ def forecast(request: ForecastRequest):
         "forecast_type": "demand_forecast",
         "model": "Random Forest",
         "inventory_risk": inventory_analysis.inventory_risk,
+        "inventory_recommendation": get_inventory_recommendation(
+            current_inventory=request.current_inventory,
+            predicted_demand=prediction,
+        ),
         "current_inventory": inventory_analysis.current_inventory,
         "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
     }
@@ -160,6 +169,10 @@ def batch_forecast(request: BatchForecastRequest):
                 "forecast_type": "demand_forecast",
                 "model": "Random Forest",
                 "inventory_risk": inventory_analysis.inventory_risk,
+                "inventory_recommendation": get_inventory_recommendation(
+                    current_inventory=item.current_inventory,
+                    predicted_demand=prediction,
+                ),
                 "current_inventory": inventory_analysis.current_inventory,
                 "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
             }
