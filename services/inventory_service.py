@@ -36,6 +36,17 @@ def calculate_reorder_quantity(
 
     return reorder_quantity
 
+def get_inventory_recommendation(
+    current_inventory: int,
+    predicted_demand: float,
+) -> str:
+    if current_inventory < predicted_demand:
+        return "REORDER"
+
+    if current_inventory < predicted_demand * 1.2:
+        return "MONITOR"
+
+    return "SUFFICIENT"
 
 if __name__ == "__main__":
     current_inventory = 20
