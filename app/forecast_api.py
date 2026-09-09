@@ -13,10 +13,12 @@ from services.forecast_model import (
 )
 from services.forecast_report import generate_forecast_report
 
-from services.inventory_service import (
-    calculate_inventory_risk,
-    get_inventory_recommendation,
+from services.inventory_planning import (
+    calculate_product_demand_std_dev,
+    calculate_safety_stock,
+    calculate_reorder_point,
 )
+from services.inventory_service import calculate_inventory_risk, get_inventory_recommendation
 
 
 app = FastAPI(
@@ -44,10 +46,13 @@ class ForecastResponse(BaseModel):
     inventory_recommendation: str
     current_inventory: int
     recommended_reorder_quantity: int
+    safety_stock: int
+    reorder_point: int
 
 
 # Train the model when the API starts
 file_path = Path("data/sales.csv")
+DEFAULT_LEAD_TIME_DAYS = 7
 
 X_train, X_test, y_train, y_test = prepare_data(file_path)
 
@@ -105,6 +110,22 @@ def forecast(request: ForecastRequest):
         predicted_demand=prediction,
     )
 
+    demand_std_dev = calculate_product_demand_std_dev(
+        file_path=file_path,
+        product_id=request.product_id,
+    )
+
+    safety_stock = calculate_safety_stock(
+        demand_std_dev=demand_std_dev,
+        lead_time_days=DEFAULT_LEAD_TIME_DAYS,
+    )
+
+    reorder_point = calculate_reorder_point(
+        average_daily_demand=prediction,
+        lead_time_days=DEFAULT_LEAD_TIME_DAYS,
+        safety_stock=safety_stock,
+    )
+
     return {
         "product_id": request.product_id,
         "forecast_date": request.forecast_date,
@@ -120,6 +141,8 @@ def forecast(request: ForecastRequest):
         ),
         "current_inventory": inventory_analysis.current_inventory,
         "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
+        "safety_stock": safety_stock,
+        "reorder_point": reorder_point,
     }
 class BatchForecastItem(BaseModel):
     product_id: str = Field(..., min_length=1)
@@ -159,6 +182,22 @@ def batch_forecast(request: BatchForecastRequest):
             predicted_demand=prediction,
         )
 
+        demand_std_dev = calculate_product_demand_std_dev(
+            file_path=file_path,
+            product_id=item.product_id,
+        )
+
+        safety_stock = calculate_safety_stock(
+            demand_std_dev=demand_std_dev,
+            lead_time_days=DEFAULT_LEAD_TIME_DAYS,
+        )
+
+        reorder_point = calculate_reorder_point(
+            average_daily_demand=prediction,
+            lead_time_days=DEFAULT_LEAD_TIME_DAYS,
+            safety_stock=safety_stock,
+        )
+
         results.append(
             {
                 "product_id": item.product_id,
@@ -175,6 +214,8 @@ def batch_forecast(request: BatchForecastRequest):
                 ),
                 "current_inventory": inventory_analysis.current_inventory,
                 "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
+                "safety_stock": safety_stock,
+                "reorder_point": reorder_point,
             }
         )
 

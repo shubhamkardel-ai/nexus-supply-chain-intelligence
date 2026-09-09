@@ -204,3 +204,20 @@ def test_forecast_report():
     assert data["mae"] >= 0
     assert data["rmse"] >= 0
     assert data["mape"] >= 0
+
+def test_forecast_includes_inventory_planning():
+    response = client.post(
+        "/forecast",
+        json={
+            "product_id": "P001",
+            "forecast_date": "2025-12-31",
+            "current_inventory": 20,
+        },
+    )
+
+    assert response.status_code == 200
+
+    result = response.json()
+
+    assert "safety_stock" in result
+    assert "reorder_point" in result
