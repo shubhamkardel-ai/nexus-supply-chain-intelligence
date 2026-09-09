@@ -104,28 +104,28 @@ if st.button("Generate Forecast"):
                 "No immediate reorder is required."
             )
 
-            st.divider()
+        st.divider()
 
-            st.subheader("Demand Forecast Visualization")
+        st.subheader("Demand Forecast Visualization")
 
-            forecast_chart_data = {
-                "Metric": [
-                    "Forecast Lower",
-                    "Predicted Demand",
-                    "Forecast Upper",
-                ],
-                "Units": [
-                    result["forecast_lower"],
-                    result["predicted_units_sold"],
-                    result["forecast_upper"],
-                ],
-            }
+        forecast_chart_data = {
+            "Metric": [
+                "Forecast Lower",
+                "Predicted Demand",
+                "Forecast Upper",
+            ],
+            "Units": [
+                result["forecast_lower"],
+                result["predicted_units_sold"],
+                result["forecast_upper"],
+            ],
+        }
 
-            st.bar_chart(
-                forecast_chart_data,
-                x="Metric",
-                y="Units",
-            )
+        st.bar_chart(
+            forecast_chart_data,
+            x="Metric",
+            y="Units",
+        )
 
     else:
         st.error(
