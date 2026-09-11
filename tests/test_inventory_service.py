@@ -78,6 +78,16 @@ def test_recommendation_when_inventory_is_sufficient():
     result = get_inventory_recommendation(
         current_inventory=35,
         predicted_demand=25,
+        reorder_point=30,
     )
 
     assert result == "SUFFICIENT"
+
+def test_recommendation_when_inventory_is_below_reorder_point():
+    result = get_inventory_recommendation(
+        current_inventory=50,
+        predicted_demand=24.12,
+        reorder_point=189,
+    )
+
+    assert result == "REORDER"

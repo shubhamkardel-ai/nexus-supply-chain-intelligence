@@ -1,7 +1,6 @@
 from datetime import date
 from pathlib import Path
 
-import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
@@ -12,13 +11,15 @@ from services.forecast_model import (
     predict_with_range,
 )
 from services.forecast_report import generate_forecast_report
-
 from services.inventory_planning import (
     calculate_product_demand_std_dev,
     calculate_safety_stock,
     calculate_reorder_point,
 )
-from services.inventory_service import calculate_inventory_risk, get_inventory_recommendation
+from services.inventory_service import (
+    calculate_inventory_risk,
+    get_inventory_recommendation,
+)
 
 
 app = FastAPI(
@@ -50,7 +51,24 @@ class ForecastResponse(BaseModel):
     reorder_point: int
 
 
-# Train the model when the API starts
+class BatchForecastItem(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    current_inventory: int = Field(..., ge=0)
+
+
+class BatchForecastRequest(BaseModel):
+    forecast_date: date
+    forecasts: list[BatchForecastItem] = Field(..., min_length=1)
+
+
+class BatchForecastResponse(BaseModel):
+    forecasts: list[ForecastResponse]
+
+
+# --------------------------------------------------
+# Model initialization
+# --------------------------------------------------
+
 file_path = Path("data/sales.csv")
 DEFAULT_LEAD_TIME_DAYS = 7
 
@@ -61,6 +79,81 @@ model, preprocessor = train_model(
     y_train,
 )
 
+
+# --------------------------------------------------
+# Shared forecast logic
+# --------------------------------------------------
+
+def generate_forecast(
+    product_id: str,
+    forecast_date: date,
+    current_inventory: int,
+) -> dict:
+
+    features = create_forecast_features(
+        file_path=file_path,
+        product_id=product_id,
+        forecast_date=forecast_date.isoformat(),
+    )
+
+    encoded_data = preprocessor.transform(features)
+
+    prediction, lower_bound, upper_bound = predict_with_range(
+        model,
+        encoded_data,
+    )
+
+    demand_std_dev = calculate_product_demand_std_dev(
+        file_path=file_path,
+        product_id=product_id,
+    )
+
+    safety_stock = calculate_safety_stock(
+        demand_std_dev=demand_std_dev,
+        lead_time_days=DEFAULT_LEAD_TIME_DAYS,
+    )
+
+    reorder_point = calculate_reorder_point(
+        average_daily_demand=prediction,
+        lead_time_days=DEFAULT_LEAD_TIME_DAYS,
+        safety_stock=safety_stock,
+    )
+
+    inventory_analysis = calculate_inventory_risk(
+        product_id=product_id,
+        current_inventory=current_inventory,
+        predicted_demand=prediction,
+        reorder_point=reorder_point,
+    )
+
+    inventory_recommendation = get_inventory_recommendation(
+        current_inventory=current_inventory,
+        predicted_demand=prediction,
+        reorder_point=reorder_point,
+    )
+
+    return {
+        "product_id": product_id,
+        "forecast_date": forecast_date,
+        "predicted_units_sold": round(float(prediction), 2),
+        "forecast_lower": round(float(lower_bound), 2),
+        "forecast_upper": round(float(upper_bound), 2),
+        "forecast_type": "demand_forecast",
+        "model": "Random Forest",
+        "inventory_risk": inventory_analysis.inventory_risk,
+        "inventory_recommendation": inventory_recommendation,
+        "current_inventory": inventory_analysis.current_inventory,
+        "recommended_reorder_quantity": (
+            inventory_analysis.recommended_reorder_quantity
+        ),
+        "safety_stock": safety_stock,
+        "reorder_point": reorder_point,
+    }
+
+
+# --------------------------------------------------
+# Basic endpoints
+# --------------------------------------------------
 
 @app.get("/")
 def root():
@@ -84,139 +177,48 @@ def inventory_status():
         "status": "active",
     }
 
+
 @app.get("/forecast/report")
 def forecast_report():
     return generate_forecast_report(file_path)
 
 
+# --------------------------------------------------
+# Single forecast
+# --------------------------------------------------
+
 @app.post("/forecast", response_model=ForecastResponse)
 def forecast(request: ForecastRequest):
-    features = create_forecast_features(
-        file_path=file_path,
+
+    return generate_forecast(
         product_id=request.product_id,
-        forecast_date=request.forecast_date.isoformat(),
-    )
-
-    encoded_data = preprocessor.transform(features)
-
-    prediction, lower_bound, upper_bound = predict_with_range(
-        model,
-        encoded_data,
-    )
-
-    inventory_analysis = calculate_inventory_risk(
-        product_id=request.product_id,
+        forecast_date=request.forecast_date,
         current_inventory=request.current_inventory,
-        predicted_demand=prediction,
     )
 
-    demand_std_dev = calculate_product_demand_std_dev(
-        file_path=file_path,
-        product_id=request.product_id,
-    )
 
-    safety_stock = calculate_safety_stock(
-        demand_std_dev=demand_std_dev,
-        lead_time_days=DEFAULT_LEAD_TIME_DAYS,
-    )
+# --------------------------------------------------
+# Batch forecast
+# --------------------------------------------------
 
-    reorder_point = calculate_reorder_point(
-        average_daily_demand=prediction,
-        lead_time_days=DEFAULT_LEAD_TIME_DAYS,
-        safety_stock=safety_stock,
-    )
-
-    return {
-        "product_id": request.product_id,
-        "forecast_date": request.forecast_date,
-        "predicted_units_sold": round(float(prediction), 2),
-        "forecast_lower": round(float(lower_bound), 2),
-        "forecast_upper": round(float(upper_bound), 2),
-        "forecast_type": "demand_forecast",
-        "model": "Random Forest",
-        "inventory_risk": inventory_analysis.inventory_risk,
-        "inventory_recommendation": get_inventory_recommendation(
-            current_inventory=request.current_inventory,
-            predicted_demand=prediction,
-        ),
-        "current_inventory": inventory_analysis.current_inventory,
-        "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
-        "safety_stock": safety_stock,
-        "reorder_point": reorder_point,
-    }
-class BatchForecastItem(BaseModel):
-    product_id: str = Field(..., min_length=1)
-    current_inventory: int = Field(..., ge=0)
-
-
-class BatchForecastRequest(BaseModel):
-    forecast_date: date
-    forecasts: list[BatchForecastItem] = Field(..., min_length=1)
-
-
-class BatchForecastResponse(BaseModel):
-    forecasts: list[ForecastResponse]
-
-
-@app.post("/forecast/batch", response_model=BatchForecastResponse)
+@app.post(
+    "/forecast/batch",
+    response_model=BatchForecastResponse,
+)
 def batch_forecast(request: BatchForecastRequest):
+
     results = []
 
     for item in request.forecasts:
-        features = create_forecast_features(
-            file_path=file_path,
+
+        result = generate_forecast(
             product_id=item.product_id,
-            forecast_date=request.forecast_date.isoformat(),
-        )
-
-        encoded_data = preprocessor.transform(features)
-
-        prediction, lower_bound, upper_bound = predict_with_range(
-            model,
-            encoded_data,
-        )
-
-        inventory_analysis = calculate_inventory_risk(
-            product_id=item.product_id,
+            forecast_date=request.forecast_date,
             current_inventory=item.current_inventory,
-            predicted_demand=prediction,
         )
 
-        demand_std_dev = calculate_product_demand_std_dev(
-            file_path=file_path,
-            product_id=item.product_id,
-        )
+        results.append(result)
 
-        safety_stock = calculate_safety_stock(
-            demand_std_dev=demand_std_dev,
-            lead_time_days=DEFAULT_LEAD_TIME_DAYS,
-        )
-
-        reorder_point = calculate_reorder_point(
-            average_daily_demand=prediction,
-            lead_time_days=DEFAULT_LEAD_TIME_DAYS,
-            safety_stock=safety_stock,
-        )
-
-        results.append(
-            {
-                "product_id": item.product_id,
-                "forecast_date": request.forecast_date,
-                "predicted_units_sold": round(float(prediction), 2),
-                "forecast_lower": round(float(lower_bound), 2),
-                "forecast_upper": round(float(upper_bound), 2),
-                "forecast_type": "demand_forecast",
-                "model": "Random Forest",
-                "inventory_risk": inventory_analysis.inventory_risk,
-                "inventory_recommendation": get_inventory_recommendation(
-                    current_inventory=item.current_inventory,
-                    predicted_demand=prediction,
-                ),
-                "current_inventory": inventory_analysis.current_inventory,
-                "recommended_reorder_quantity": inventory_analysis.recommended_reorder_quantity,
-                "safety_stock": safety_stock,
-                "reorder_point": reorder_point,
-            }
-        )
-
-    return {"forecasts": results}
+    return {
+        "forecasts": results,
+    }

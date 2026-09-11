@@ -61,48 +61,107 @@ if st.button("Generate Forecast"):
             )
 
         with col3:
-            risk = result["inventory_risk"]
-
-            if risk == "HIGH":
-                st.error(f"Inventory Risk: {risk}")
-            elif risk == "MEDIUM":
-                st.warning(f"Inventory Risk: {risk}")
-            else:
-                st.success(f"Inventory Risk: {risk}")
+            st.metric(
+                "Safety Stock",
+                f"{result['safety_stock']} units",
+            )
 
         with col4:
+            st.metric(
+                "Reorder Point",
+                f"{result['reorder_point']} units",
+            )
+
+        st.divider()
+
+        st.subheader("Inventory Decision")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric(
+                "Current Inventory",
+                f"{result['current_inventory']} units",
+            )
+
+        with col2:
+            st.metric(
+                "Predicted Demand",
+                f"{result['predicted_units_sold']:.2f} units",
+            )
+
+        with col3:
             st.metric(
                 "Reorder Quantity",
                 f"{result['recommended_reorder_quantity']} units",
             )
 
+        with col4:
+            risk = result["inventory_risk"]
+
+            if risk == "HIGH":
+                st.error(f"Risk: {risk}")
+            elif risk == "MEDIUM":
+                st.warning(f"Risk: {risk}")
+            else:
+                st.success(f"Risk: {risk}")
+
         st.divider()
 
-        st.write(
-            "Inventory Recommendation:",
-            result["inventory_recommendation"],
-        )
+        st.subheader("Supply Chain Decision Flow")
+
+        flow_col1, flow_col2, flow_col3, flow_col4 = st.columns(4)
+
+        with flow_col1:
+            st.metric(
+                "Predicted Demand",
+                f"{result['predicted_units_sold']:.2f}",
+            )
+
+        with flow_col2:
+            st.metric(
+                "Safety Stock",
+                f"{result['safety_stock']}",
+            )
+
+        with flow_col3:
+            st.metric(
+                "Reorder Point",
+                f"{result['reorder_point']}",
+            )
+
+        with flow_col4:
+            st.metric(
+                "Current Inventory",
+                f"{result['current_inventory']}",
+            )
 
         st.divider()
 
-        st.subheader("Decision Summary")
+        st.subheader("Final Recommendation")
 
-        if result["inventory_risk"] == "HIGH":
+        recommendation = result["inventory_recommendation"]
+
+        if recommendation == "REORDER":
             st.error(
-                f"Inventory is below predicted demand. "
-                f"Reorder approximately "
+                f"REORDER REQUIRED — Inventory is below predicted demand. "
+                f"Recommended reorder quantity: "
                 f"{result['recommended_reorder_quantity']} units."
             )
-        elif result["inventory_risk"] == "MEDIUM":
+        elif recommendation == "MONITOR":
             st.warning(
-                "Inventory is close to predicted demand. "
-                "Monitor stock levels and prepare for replenishment."
+                "MONITOR INVENTORY — Stock is close to the expected demand. "
+                "Prepare for replenishment if demand increases."
             )
         else:
             st.success(
-                "Inventory is sufficient to cover predicted demand. "
+                "SUFFICIENT INVENTORY — Current stock is sufficient. "
                 "No immediate reorder is required."
             )
+
+        st.write(
+            f"Inventory Recommendation: **{recommendation}**"
+        )
 
         st.divider()
 
@@ -131,11 +190,6 @@ if st.button("Generate Forecast"):
         st.error(
             f"Forecast request failed: {response.text}"
         )
-
-
-st.divider()
-
-st.header("Model Performance")
 
 if st.button("View Model Performance"):
     import requests
