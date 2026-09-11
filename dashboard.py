@@ -144,7 +144,7 @@ if st.button("Generate Forecast"):
 
         if recommendation == "REORDER":
             st.error(
-                f"REORDER REQUIRED — Inventory is below predicted demand. "
+                f"REORDER REQUIRED — Inventory is below the reorder point. "
                 f"Recommended reorder quantity: "
                 f"{result['recommended_reorder_quantity']} units."
             )

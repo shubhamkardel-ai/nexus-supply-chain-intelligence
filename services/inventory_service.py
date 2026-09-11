@@ -6,12 +6,20 @@ def calculate_inventory_risk(
     predicted_demand: float,
     reorder_point: int | None = None,
 ):
-    if current_inventory < predicted_demand:
-        risk = "HIGH"
-    elif current_inventory < predicted_demand * 1.2:
-        risk = "MEDIUM"
+    if reorder_point is not None:
+        if current_inventory < predicted_demand:
+            risk = "HIGH"
+        elif current_inventory < reorder_point:
+            risk = "MEDIUM"
+        else:
+            risk = "LOW"
     else:
-        risk = "LOW"
+        if current_inventory < predicted_demand:
+            risk = "HIGH"
+        elif current_inventory < predicted_demand * 1.2:
+            risk = "MEDIUM"
+        else:
+            risk = "LOW"
 
     return InventoryStatus(
         product_id=product_id,
