@@ -110,60 +110,35 @@ if st.button("Generate Forecast"):
 
         st.subheader("Supply Chain Decision Flow")
 
-        flow_col1, flow_col2, flow_col3, flow_col4 = st.columns(4)
+        flow_col1, flow_col2, flow_col3 = st.columns(3)
 
         with flow_col1:
-            st.metric(
-                "Predicted Demand",
-                f"{result['predicted_units_sold']:.2f}",
+            st.info(
+                f"1. Demand Forecast\n\n"
+                f"Expected demand: **{result['predicted_units_sold']:.2f} units**"
             )
 
         with flow_col2:
-            st.metric(
-                "Safety Stock",
-                f"{result['safety_stock']}",
+            st.warning(
+                f"2. Inventory Planning\n\n"
+                f"Reorder point: **{result['reorder_point']} units**"
             )
 
         with flow_col3:
-            st.metric(
-                "Reorder Point",
-                f"{result['reorder_point']}",
-            )
+            if result["current_inventory"] < result["reorder_point"]:
+                st.error(
+                    f"3. Action Required\n\n"
+                    f"Reorder **{result['recommended_reorder_quantity']} units**"
+                )
+            else:
+                st.success(
+                    "3. Action Required\n\n"
+                    "Current inventory is sufficient."
+                )
 
-        with flow_col4:
-            st.metric(
-                "Current Inventory",
-                f"{result['current_inventory']}",
-            )
-
-        st.divider()
-
-        st.subheader("Final Recommendation")
-
-        recommendation = result["inventory_recommendation"]
-
-        if recommendation == "REORDER":
-            st.error(
-                f"REORDER REQUIRED — Inventory is below the reorder point. "
-                f"Recommended reorder quantity: "
-                f"{result['recommended_reorder_quantity']} units."
-            )
-        elif recommendation == "MONITOR":
-            st.warning(
-                "MONITOR INVENTORY — Stock is close to the expected demand. "
-                "Prepare for replenishment if demand increases."
-            )
-        else:
-            st.success(
-                "SUFFICIENT INVENTORY — Current stock is sufficient. "
-                "No immediate reorder is required."
-            )
-
-        st.write(
-            f"Inventory Recommendation: **{recommendation}**"
+        st.caption(
+            "Forecast demand → calculate inventory threshold → recommend supply action"
         )
-
-        st.divider()
 
         st.subheader("Demand Forecast Visualization")
 
