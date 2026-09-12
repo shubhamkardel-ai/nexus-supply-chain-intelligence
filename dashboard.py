@@ -7,7 +7,14 @@ st.set_page_config(
 )
 
 st.title("NEXUS Supply Chain Intelligence")
-st.subheader("AI-Powered Supply Chain Decision Platform")
+
+st.markdown(
+    "### AI-Powered Supply Chain Decision Platform"
+)
+
+st.caption(
+    "Demand forecasting • Inventory risk analysis • Reorder planning"
+)
 
 st.divider()
 
@@ -45,6 +52,8 @@ if st.button("Generate Forecast"):
         result = response.json()
 
         st.success("Forecast generated successfully.")
+
+        st.subheader("Forecast Summary")
 
         col1, col2, col3, col4 = st.columns(4)
 
@@ -166,7 +175,11 @@ if st.button("Generate Forecast"):
             f"Forecast request failed: {response.text}"
         )
 
-if st.button("View Model Performance"):
+st.divider()
+
+st.header("Model Performance")
+
+if st.button("Show Model Metrics"):
     import requests
 
     response = requests.get(
@@ -202,8 +215,8 @@ if st.button("View Model Performance"):
                 report["trees"],
             )
 
-        st.write(
-            f"Model: {report['model']}"
+        st.caption(
+            f"Forecasting model: {report['model']} • {report['trees']} decision trees"
         )
 
     else:
