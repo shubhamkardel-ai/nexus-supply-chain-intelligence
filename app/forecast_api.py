@@ -4,6 +4,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from services.multi_day_forecast import generate_multi_day_forecast
+
 from services.forecast_features import create_forecast_features
 from services.forecast_model import (
     prepare_data,
@@ -64,6 +66,25 @@ class BatchForecastRequest(BaseModel):
 class BatchForecastResponse(BaseModel):
     forecasts: list[ForecastResponse]
 
+
+class MultiDayForecastRequest(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    start_date: date
+    horizon: int = Field(..., ge=1, le=30)
+
+
+class MultiDayForecastItem(BaseModel):
+    forecast_date: date
+    predicted_units_sold: float
+    forecast_lower: float
+    forecast_upper: float
+
+
+class MultiDayForecastResponse(BaseModel):
+    product_id: str
+    start_date: date
+    horizon: int
+    forecasts: list[MultiDayForecastItem]
 
 # --------------------------------------------------
 # Model initialization
@@ -221,4 +242,27 @@ def batch_forecast(request: BatchForecastRequest):
 
     return {
         "forecasts": results,
+    }
+
+@app.post(
+    "/forecast/multi-day",
+    response_model=MultiDayForecastResponse,
+)
+def multi_day_forecast(
+    request: MultiDayForecastRequest,
+):
+    forecasts = generate_multi_day_forecast(
+        file_path=file_path,
+        product_id=request.product_id,
+        start_date=request.start_date,
+        horizon=request.horizon,
+        model=model,
+        preprocessor=preprocessor,
+    )
+
+    return {
+        "product_id": request.product_id,
+        "start_date": request.start_date,
+        "horizon": request.horizon,
+        "forecasts": forecasts,
     }
