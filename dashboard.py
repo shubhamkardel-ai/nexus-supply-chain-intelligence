@@ -373,6 +373,14 @@ with st.sidebar:
         step=1,
     )
 
+    forecast_horizon = st.slider(
+        "Forecast Horizon",
+        min_value=7,
+        max_value=30,
+        value=7,
+        step=1,
+    )
+
     generate = st.button(
         "Generate Forecast",
         type="primary",
@@ -421,6 +429,9 @@ st.markdown(
 if "forecast_result" not in st.session_state:
     st.session_state.forecast_result = None
 
+if "multi_day_forecast_result" not in st.session_state:
+    st.session_state.multi_day_forecast_result = None
+
 if generate:
     with st.spinner("Running demand forecast and inventory analysis..."):
         response = api_post(
@@ -432,9 +443,17 @@ if generate:
             },
         )
 
+        multi_day_response = api_post(
+            "/forecast/multi-day",
+            {
+                "product_id": product_id,
+                "start_date": forecast_date.isoformat(),
+                "horizon": forecast_horizon,
+            },
+        )
+
     if response is not None and response.status_code == 200:
         st.session_state.forecast_result = response.json()
-        st.toast("Forecast generated successfully")
     elif response is None:
         st.error(
             "Unable to connect to the FastAPI backend. "
@@ -442,6 +461,22 @@ if generate:
         )
     else:
         st.error(f"Forecast request failed: {response.text}")
+
+    if multi_day_response is not None and multi_day_response.status_code == 200:
+        st.session_state.multi_day_forecast_result = multi_day_response.json()
+    elif multi_day_response is not None:
+        st.error(
+            f"Multi-day forecast request failed: "
+            f"{multi_day_response.text}"
+        )
+
+    if (
+        response is not None
+        and response.status_code == 200
+        and multi_day_response is not None
+        and multi_day_response.status_code == 200
+    ):
+        st.toast("Forecast generated successfully")
 
 
 result = st.session_state.forecast_result
@@ -617,6 +652,90 @@ else:
             </div>
             """,
             unsafe_allow_html=True,
+        )
+
+    # ========================================================
+    # MULTI-DAY DEMAND OUTLOOK
+    # ========================================================
+
+    multi_day_result = st.session_state.multi_day_forecast_result
+
+    if multi_day_result is not None:
+        st.markdown(
+            '<div class="section-label">Demand Outlook</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <div class="panel">
+                <div class="panel-title">Multi-day demand forecast</div>
+                <div class="panel-subtitle">
+                    {multi_day_result['product_id']} ·
+                    {multi_day_result['start_date']} ·
+                    {multi_day_result['horizon']} day horizon
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        import pandas as pd
+
+        multi_day_data = pd.DataFrame(
+            multi_day_result["forecasts"]
+        )
+
+        multi_day_data["forecast_date"] = pd.to_datetime(
+            multi_day_data["forecast_date"]
+        )
+
+        multi_day_data = multi_day_data.set_index(
+            "forecast_date"
+        )
+
+        chart_data = multi_day_data[
+            [
+                "forecast_lower",
+                "predicted_units_sold",
+                "forecast_upper",
+            ]
+        ].copy()
+
+        chart_data.columns = [
+            "Lower Forecast",
+            "Predicted Demand",
+            "Upper Forecast",
+        ]
+
+        st.line_chart(
+            chart_data,
+            height=360,
+        )
+
+        st.caption(
+            "Predicted demand with the model's forecast range across the selected horizon."
+        )
+
+        display_data = multi_day_data.reset_index()
+
+        display_data["forecast_date"] = display_data[
+            "forecast_date"
+        ].dt.strftime("%Y-%m-%d")
+
+        display_data = display_data.rename(
+            columns={
+                "forecast_date": "Date",
+                "predicted_units_sold": "Predicted Demand",
+                "forecast_lower": "Lower Forecast",
+                "forecast_upper": "Upper Forecast",
+            }
+        )
+
+        st.dataframe(
+            display_data,
+            use_container_width=True,
+            hide_index=True,
         )
 
     # ========================================================
