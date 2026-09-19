@@ -60,3 +60,39 @@ def calculate_product_demand_std_dev(
         raise ValueError(f"Product not found: {product_id}")
 
     return float(product_data["units_sold"].std())
+
+def calculate_inventory_plan(
+    average_daily_demand: float,
+    demand_std_dev: float,
+    lead_time_days: int,
+    service_level_z: float = 1.65,
+) -> dict:
+    """
+    Calculate the key inventory-planning values for a product.
+    """
+
+    safety_stock = calculate_safety_stock(
+        demand_std_dev=demand_std_dev,
+        lead_time_days=lead_time_days,
+        service_level_z=service_level_z,
+    )
+
+    reorder_point = calculate_reorder_point(
+        average_daily_demand=average_daily_demand,
+        lead_time_days=lead_time_days,
+        safety_stock=safety_stock,
+    )
+
+    lead_time_demand = math.ceil(
+        average_daily_demand * lead_time_days
+    )
+
+    return {
+        "average_daily_demand": round(average_daily_demand, 2),
+        "demand_std_dev": round(demand_std_dev, 2),
+        "lead_time_days": lead_time_days,
+        "service_level_z": service_level_z,
+        "lead_time_demand": lead_time_demand,
+        "safety_stock": safety_stock,
+        "reorder_point": reorder_point,
+    }

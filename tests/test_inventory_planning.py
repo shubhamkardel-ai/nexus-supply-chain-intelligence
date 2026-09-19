@@ -2,9 +2,10 @@ import pandas as pd
 from pathlib import Path
 from services.inventory_planning import (
     calculate_demand_std_dev,
-    calculate_safety_stock,
-    calculate_reorder_point,
+    calculate_inventory_plan,
     calculate_product_demand_std_dev,
+    calculate_reorder_point,
+    calculate_safety_stock,
 )
 
 
@@ -41,3 +42,18 @@ def test_calculate_product_demand_std_dev():
     )
 
     assert round(result, 2) == 4.49
+
+def test_calculate_inventory_plan():
+    result = calculate_inventory_plan(
+        average_daily_demand=25,
+        demand_std_dev=4,
+        lead_time_days=4,
+        service_level_z=1.65,
+    )
+
+    assert result["average_daily_demand"] == 25
+    assert result["demand_std_dev"] == 4
+    assert result["lead_time_days"] == 4
+    assert result["lead_time_demand"] == 100
+    assert result["safety_stock"] == 14
+    assert result["reorder_point"] == 114

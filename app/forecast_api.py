@@ -14,10 +14,12 @@ from services.forecast_model import (
 )
 from services.forecast_report import generate_forecast_report
 from services.inventory_planning import (
+    calculate_inventory_plan,
     calculate_product_demand_std_dev,
     calculate_safety_stock,
     calculate_reorder_point,
 )
+
 from services.inventory_service import (
     calculate_inventory_risk,
     get_inventory_recommendation,
@@ -85,6 +87,22 @@ class MultiDayForecastResponse(BaseModel):
     start_date: date
     horizon: int
     forecasts: list[MultiDayForecastItem]
+
+class InventoryPlanRequest(BaseModel):
+    average_daily_demand: float = Field(..., ge=0)
+    demand_std_dev: float = Field(..., ge=0)
+    lead_time_days: int = Field(..., ge=1)
+    service_level_z: float = Field(1.65, gt=0)
+
+
+class InventoryPlanResponse(BaseModel):
+    average_daily_demand: float
+    demand_std_dev: float
+    lead_time_days: int
+    service_level_z: float
+    lead_time_demand: int
+    safety_stock: int
+    reorder_point: int
 
 # --------------------------------------------------
 # Model initialization
@@ -197,6 +215,20 @@ def inventory_status():
         "service": "inventory_management",
         "status": "active",
     }
+
+@app.post(
+    "/inventory/plan",
+    response_model=InventoryPlanResponse,
+)
+def inventory_plan(
+    request: InventoryPlanRequest,
+):
+    return calculate_inventory_plan(
+        average_daily_demand=request.average_daily_demand,
+        demand_std_dev=request.demand_std_dev,
+        lead_time_days=request.lead_time_days,
+        service_level_z=request.service_level_z,
+    )
 
 
 @app.get("/forecast/report")
