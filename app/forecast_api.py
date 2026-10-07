@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from services.scenario_service import calculate_scenario
 
 from services.multi_day_forecast import generate_multi_day_forecast
 
@@ -104,11 +105,38 @@ class InventoryPlanResponse(BaseModel):
     safety_stock: int
     reorder_point: int
 
-# --------------------------------------------------
-# Model initialization
-# --------------------------------------------------
+class InventoryPlanResponse(BaseModel):
+    average_daily_demand: float
+    demand_std_dev: float
+    lead_time_days: int
+    service_level_z: float
+    lead_time_demand: int
+    safety_stock: int
+    reorder_point: int
+
+
+class ScenarioRequest(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    base_demand: float = Field(..., ge=0)
+    base_lead_time: int = Field(..., ge=1)
+    base_reorder_point: int = Field(..., ge=0)
+    demand_change_percent: float = 0
+    lead_time_change_percent: float = 0
+
+class ScenarioResponse(BaseModel):
+    product_id: str
+    base_demand: float
+    adjusted_demand: float
+    base_lead_time: int
+    adjusted_lead_time: int
+    base_reorder_point: int
+    adjusted_reorder_point: int
+    demand_change_percent: float
+    lead_time_change_percent: float
+
 
 file_path = Path("data/sales.csv")
+
 DEFAULT_LEAD_TIME_DAYS = 7
 
 X_train, X_test, y_train, y_test = prepare_data(file_path)
@@ -228,6 +256,23 @@ def inventory_plan(
         demand_std_dev=request.demand_std_dev,
         lead_time_days=request.lead_time_days,
         service_level_z=request.service_level_z,
+    )
+
+
+@app.post(
+    "/scenario",
+    response_model=ScenarioResponse,
+)
+def scenario_analysis(
+    request: ScenarioRequest,
+):
+    return calculate_scenario(
+        product_id=request.product_id,
+        base_demand=request.base_demand,
+        base_lead_time=request.base_lead_time,
+        base_reorder_point=request.base_reorder_point,
+        demand_change_percent=request.demand_change_percent,
+        lead_time_change_percent=request.lead_time_change_percent,
     )
 
 
