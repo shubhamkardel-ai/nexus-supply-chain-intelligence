@@ -4,6 +4,8 @@ from pathlib import Path
 from models.disruption import DisruptionScenario
 from services.disruption_service import simulate_disruption
 
+from services.impact_analysis_service import analyze_disruption_impact
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from services.scenario_service import calculate_scenario
@@ -157,6 +159,21 @@ class ScenarioResponse(BaseModel):
     demand_change_percent: float
     lead_time_change_percent: float
 
+class ImpactAnalysisRequest(BaseModel):
+    product_id: str
+    disruption_type: str
+    expected_shortage: int = Field(..., ge=0)
+    projected_inventory: int = Field(..., ge=0)
+    risk_level: str
+
+
+class ImpactAnalysisResponse(BaseModel):
+    product_id: str
+    disruption_type: str
+    impact_level: str
+    expected_shortage: int
+    projected_inventory: int
+    recommendation: str
 
 file_path = Path("data/sales.csv")
 
@@ -387,3 +404,18 @@ def disruption_simulation(
         base_lead_time=request.base_lead_time,
         current_inventory=request.current_inventory,
     )
+
+@app.post(
+    "/impact/analyze",
+    response_model=ImpactAnalysisResponse,
+)
+def impact_analysis(request: ImpactAnalysisRequest):
+    simulation_result = {
+        "product_id": request.product_id,
+        "disruption_type": request.disruption_type,
+        "expected_shortage": request.expected_shortage,
+        "projected_inventory": request.projected_inventory,
+        "risk_level": request.risk_level,
+    }
+
+    return analyze_disruption_impact(simulation_result)
