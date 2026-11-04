@@ -1,6 +1,9 @@
 from datetime import date
 from pathlib import Path
 
+from models.disruption import DisruptionScenario
+from services.disruption_service import simulate_disruption
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from services.scenario_service import calculate_scenario
@@ -26,6 +29,26 @@ from services.inventory_service import (
     get_inventory_recommendation,
 )
 
+class DisruptionRequest(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    disruption_type: str = Field(..., min_length=1)
+    severity_percent: float = Field(..., ge=0, le=100)
+    duration_days: int = Field(..., ge=1)
+    base_demand: float = Field(..., ge=0)
+    base_lead_time: int = Field(..., ge=1)
+    current_inventory: int = Field(..., ge=0)
+
+
+class DisruptionResponse(BaseModel):
+    product_id: str
+    disruption_type: str
+    duration_days: int
+    simulated_demand: float
+    simulated_lead_time: int
+    projected_inventory: int
+    expected_demand: float
+    expected_shortage: int
+    risk_level: str
 
 app = FastAPI(
     title="NEXUS Supply Chain Intelligence",
@@ -343,3 +366,24 @@ def multi_day_forecast(
         "horizon": request.horizon,
         "forecasts": forecasts,
     }
+
+@app.post(
+    "/disruption/simulate",
+    response_model=DisruptionResponse,
+)
+def disruption_simulation(
+    request: DisruptionRequest,
+):
+    scenario = DisruptionScenario(
+        product_id=request.product_id,
+        disruption_type=request.disruption_type,
+        severity_percent=request.severity_percent,
+        duration_days=request.duration_days,
+    )
+
+    return simulate_disruption(
+        scenario=scenario,
+        base_demand=request.base_demand,
+        base_lead_time=request.base_lead_time,
+        current_inventory=request.current_inventory,
+    )
