@@ -6,6 +6,8 @@ from services.disruption_service import simulate_disruption
 
 from services.impact_analysis_service import analyze_disruption_impact
 
+from services.decision_engine import generate_decision
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from services.scenario_service import calculate_scenario
@@ -174,6 +176,24 @@ class ImpactAnalysisResponse(BaseModel):
     expected_shortage: int
     projected_inventory: int
     recommendation: str
+
+class DecisionRequest(BaseModel):
+    product_id: str
+    disruption_type: str
+    impact_level: str
+    expected_shortage: int = Field(..., ge=0)
+    projected_inventory: int = Field(..., ge=0)
+
+
+class DecisionResponse(BaseModel):
+    product_id: str
+    disruption_type: str
+    impact_level: str
+    expected_shortage: int
+    projected_inventory: int
+    recommended_action: str
+    priority: str
+    rationale: str
 
 file_path = Path("data/sales.csv")
 
@@ -419,3 +439,18 @@ def impact_analysis(request: ImpactAnalysisRequest):
     }
 
     return analyze_disruption_impact(simulation_result)
+
+@app.post(
+    "/decision/recommend",
+    response_model=DecisionResponse,
+)
+def decision_recommendation(request: DecisionRequest):
+    impact_result = {
+        "product_id": request.product_id,
+        "disruption_type": request.disruption_type,
+        "impact_level": request.impact_level,
+        "expected_shortage": request.expected_shortage,
+        "projected_inventory": request.projected_inventory,
+    }
+
+    return generate_decision(impact_result)
