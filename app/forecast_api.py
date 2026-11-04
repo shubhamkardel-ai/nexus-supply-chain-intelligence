@@ -1,6 +1,8 @@
 from datetime import date
 from pathlib import Path
 
+from services.decision_explanation_service import explain_decision
+
 from models.disruption import DisruptionScenario
 from services.disruption_service import simulate_disruption
 
@@ -454,3 +456,26 @@ def decision_recommendation(request: DecisionRequest):
     }
 
     return generate_decision(impact_result)
+
+@app.post("/decision/explain")
+def decision_explanation(request: DecisionRequest):
+
+    # Prepare impact information
+    impact_result = {
+        "product_id": request.product_id,
+        "disruption_type": request.disruption_type,
+        "impact_level": request.impact_level,
+        "expected_shortage": request.expected_shortage,
+        "projected_inventory": request.projected_inventory,
+    }
+
+    # Generate the decision
+    decision_result = generate_decision(impact_result)
+
+    # Explain why the decision was selected
+    explanation = explain_decision(
+        impact_result,
+        decision_result
+    )
+
+    return explanation
