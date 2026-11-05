@@ -21,7 +21,11 @@ def create_supplier(
     lead_time_days: int,
     reliability_score: float,
     contact_email: str | None = None,
+    unit_cost: float | None = None,
+    capacity: int | None = None,
+    minimum_order_quantity: int | None = None,
 ) -> Supplier:
+
     risk_level = calculate_supplier_risk(
         reliability_score=reliability_score,
         lead_time_days=lead_time_days,
@@ -35,4 +39,7 @@ def create_supplier(
         reliability_score=reliability_score,
         risk_level=risk_level,
         contact_email=contact_email,
+        unit_cost=unit_cost,
+        capacity=capacity,
+        minimum_order_quantity=minimum_order_quantity,
     )

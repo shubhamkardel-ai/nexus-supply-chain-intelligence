@@ -11,3 +11,8 @@ class Supplier:
     reliability_score: float
     risk_level: str
     contact_email: Optional[str] = None
+
+    # Procurement optimization attributes
+    unit_cost: Optional[float] = None
+    capacity: Optional[int] = None
+    minimum_order_quantity: Optional[int] = None

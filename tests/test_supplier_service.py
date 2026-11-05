@@ -42,3 +42,21 @@ def test_create_supplier():
     assert supplier.reliability_score == 90
     assert supplier.risk_level == "LOW"
     assert supplier.contact_email == "supplier@example.com"
+
+def test_create_supplier_with_procurement_details():
+    supplier = create_supplier(
+        supplier_id="S002",
+        name="Reliable Components",
+        country="India",
+        lead_time_days=4,
+        reliability_score=95,
+        unit_cost=120.50,
+        capacity=1000,
+        minimum_order_quantity=50,
+    )
+
+    assert supplier.supplier_id == "S002"
+    assert supplier.unit_cost == 120.50
+    assert supplier.capacity == 1000
+    assert supplier.minimum_order_quantity == 50
+    assert supplier.risk_level == "LOW"
