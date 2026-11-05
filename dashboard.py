@@ -24,7 +24,7 @@ st.markdown(
     <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
-        header {visibility: hidden;}
+       
 
         .stApp {
             background: #0b0f14;
@@ -313,6 +313,21 @@ def api_post(path: str, payload: dict):
     except requests.RequestException:
         return None
 
+def api_post_json(path: str, payload: dict):
+    response = api_post(path, payload)
+
+    if response is None:
+        return None
+
+    if response.status_code != 200:
+        st.error(f"API Error ({response.status_code}): {response.text}")
+        return None
+
+    try:
+        return response.json()
+    except ValueError:
+        st.error("API returned an invalid JSON response.")
+        return None
 
 def format_units(value):
     return f"{value:,.2f}"
@@ -902,4 +917,353 @@ st.markdown(
     </div>
     """,
     unsafe_allow_html=True,
+)
+
+# --------------------------------------------------
+# NEXUS DECISION CENTER
+# --------------------------------------------------
+
+st.divider()
+
+st.header("NEXUS Decision Center")
+
+st.subheader("1. Disruption Simulation")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    disruption_product = st.selectbox(
+        "Select Product",
+        ["P001", "P002", "P003", "P004", "P005"],
+        key="disruption_product",
+    )
+
+    disruption_type = st.selectbox(
+        "Disruption Type",
+        [
+            "supplier_unavailable",
+            "transport_delay",
+            "demand_surge",
+            "production_delay",
+        ],
+        key="disruption_type",
+    )
+
+with col2:
+    severity_percent = st.slider(
+        "Disruption Severity (%)",
+        min_value=0,
+        max_value=100,
+        value=50,
+        key="severity_percent",
+    )
+
+    duration_days = st.number_input(
+        "Duration (Days)",
+        min_value=1,
+        max_value=365,
+        value=7,
+        key="duration_days",
+    )
+
+with col3:
+    base_demand = st.number_input(
+        "Base Daily Demand",
+        min_value=0.0,
+        value=50.0,
+        key="base_demand",
+    )
+
+    base_lead_time = st.number_input(
+        "Base Lead Time (Days)",
+        min_value=1,
+        value=7,
+        key="base_lead_time",
+    )
+
+current_inventory_disruption = st.number_input(
+    "Current Inventory",
+    min_value=0,
+    value=100,
+    key="current_inventory_disruption",
+)
+
+simulate_button = st.button(
+    "Simulate Disruption",
+    type="primary",
+    key="simulate_disruption_button",
+)
+
+if simulate_button:
+
+    disruption_payload = {
+        "product_id": disruption_product,
+        "disruption_type": disruption_type,
+        "severity_percent": severity_percent,
+        "duration_days": duration_days,
+        "base_demand": base_demand,
+        "base_lead_time": base_lead_time,
+        "current_inventory": current_inventory_disruption,
+    }
+
+    with st.spinner("Simulating supply chain disruption..."):
+
+        disruption_result = api_post_json(
+            "/disruption/simulate",
+            disruption_payload,
+        )
+
+    if disruption_result:
+
+        st.session_state["disruption_result"] = disruption_result
+
+        st.success("Disruption simulation completed!")
+
+    else:
+        st.error("Disruption simulation failed. Check the API server.")
+
+# Display saved simulation results
+if "disruption_result" in st.session_state:
+
+    st.markdown("### Simulation Results")
+
+    simulation = st.session_state["disruption_result"]
+
+    st.metric(
+        "Expected Shortage",
+        f"{simulation['expected_shortage']} units"
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Projected Inventory",
+        simulation["projected_inventory"]
+    )
+
+    col2.metric(
+        "Simulated Demand",
+        simulation["simulated_demand"]
+    )
+
+    col3.metric(
+        "Risk Level",
+        simulation["risk_level"]
+    )
+
+# --------------------------------------------------
+# IMPACT ANALYSIS
+# --------------------------------------------------
+
+st.divider()
+
+st.subheader("2. Disruption Impact Analysis")
+
+if "disruption_result" in st.session_state:
+
+    disruption_result = st.session_state["disruption_result"]
+
+    analyze_button = st.button(
+        "Analyze Disruption Impact",
+        type="primary",
+        key="analyze_impact_button",
+    )
+
+    if analyze_button:
+
+        impact_payload = {
+            "product_id": disruption_result["product_id"],
+            "disruption_type": disruption_result["disruption_type"],
+            "expected_shortage": disruption_result["expected_shortage"],
+            "projected_inventory": disruption_result["projected_inventory"],
+            "risk_level": disruption_result["risk_level"],
+        }
+
+        with st.spinner("Analyzing disruption impact..."):
+
+            impact_result = api_post_json(
+                "/impact/analyze",
+                impact_payload,
+            )
+
+        if impact_result:
+
+            st.session_state["impact_result"] = impact_result
+
+            st.success("Impact analysis completed!")
+
+        else:
+            st.error("Impact analysis failed. Check the API server.")
+
+else:
+    st.info("Run a disruption simulation first to analyze its impact.")
+
+# Display saved impact analysis results
+if "impact_result" in st.session_state:
+
+    st.markdown("### Impact Analysis Results")
+
+    impact = st.session_state["impact_result"]
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Impact Level", impact["impact_level"])
+    col2.metric("Expected Shortage", f"{impact['expected_shortage']} units")
+    col3.metric("Projected Inventory", f"{impact['projected_inventory']} units")
+
+    st.info(f"Recommendation: {impact['recommendation']}")
+
+# --------------------------------------------------
+# DECISION RECOMMENDATION
+# --------------------------------------------------
+
+st.divider()
+
+st.subheader("3. Decision Recommendation")
+
+if "impact_result" in st.session_state:
+
+    impact_result = st.session_state["impact_result"]
+
+    recommend_button = st.button(
+        "Generate Decision Recommendation",
+        type="primary",
+        key="generate_decision_button",
+    )
+
+    if recommend_button:
+
+        decision_payload = {
+            "product_id": impact_result["product_id"],
+            "disruption_type": impact_result["disruption_type"],
+            "impact_level": impact_result["impact_level"],
+            "expected_shortage": impact_result["expected_shortage"],
+            "projected_inventory": impact_result["projected_inventory"],
+        }
+
+        with st.spinner("Generating supply chain decision..."):
+
+            decision_result = api_post_json(
+                "/decision/recommend",
+                decision_payload,
+            )
+
+        if decision_result:
+
+            st.session_state["decision_result"] = decision_result
+
+            st.success("Decision recommendation generated!")
+
+        else:
+            st.error("Decision recommendation failed. Check the API server.")
+
+else:
+    st.info("Complete impact analysis first.")
+
+# Display saved decision recommendation
+if "decision_result" in st.session_state:
+
+    st.markdown("### Recommended Supply Chain Action")
+
+    decision = st.session_state["decision_result"]
+
+    col1, col2 = st.columns(2)
+
+    col1.metric(
+        "Recommended Action",
+        decision["recommended_action"]
+    )
+
+    col2.metric(
+        "Priority",
+        decision["priority"]
+    )
+
+    st.info(
+        f"Decision Rationale: {decision['rationale']}"
+    )
+
+# --------------------------------------------------
+# DECISION EXPLANATION
+# --------------------------------------------------
+
+st.divider()
+
+st.subheader("4. Why Was This Decision Selected?")
+
+if "decision_result" in st.session_state:
+
+    explain_button = st.button(
+        "Explain Recommended Decision",
+        type="primary",
+        key="explain_decision_button",
+    )
+
+    if explain_button:
+
+        decision_result = st.session_state["decision_result"]
+
+        explanation_payload = {
+            "product_id": decision_result["product_id"],
+            "disruption_type": decision_result["disruption_type"],
+            "impact_level": decision_result["impact_level"],
+            "expected_shortage": decision_result["expected_shortage"],
+            "projected_inventory": decision_result["projected_inventory"],
+        }
+
+        with st.spinner("Preparing decision explanation..."):
+
+            explanation_result = api_post_json(
+                "/decision/explain",
+                explanation_payload,
+            )
+
+        if explanation_result:
+
+            st.session_state["explanation_result"] = explanation_result
+
+            st.success("Decision explanation generated!")
+
+        else:
+            st.error("Decision explanation failed. Check the API server.")
+
+else:
+    st.info("Generate a decision recommendation first.")
+
+# Display saved decision explanation
+if "explanation_result" in st.session_state:
+
+    st.markdown("### Decision Explanation")
+
+    explanation = st.session_state["explanation_result"]
+
+    st.info(explanation["decision_summary"])
+
+    st.markdown("#### Key Decision Factors")
+
+    for factor in explanation["key_factors"]:
+
+        st.markdown(f"**{factor['factor']}**")
+
+        st.write(f"Value: {factor['value']}")
+
+        st.caption(factor["effect"])
+
+    st.markdown("#### Alternatives Considered")
+
+    for alternative in explanation["alternatives_considered"]:
+
+        st.markdown(f"**{alternative['action']}**")
+
+        st.write(alternative["reason"])
+
+    st.markdown("#### Supporting Evidence")
+
+    st.json(explanation["supporting_evidence"])
+
+st.markdown(
+    """
+    Simulate supply chain disruptions, analyze their impact,
+    and receive AI-powered operational recommendations.
+    """
 )
