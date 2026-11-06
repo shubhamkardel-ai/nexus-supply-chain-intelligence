@@ -2,8 +2,10 @@
 import pytest
 
 from services.supplier_service import create_supplier
-from services.supply_chain_optimizer import optimize_supplier_selection
-
+from services.supply_chain_optimizer import (
+    optimize_supplier_selection,
+    compare_suppliers,
+)
 
 def test_selects_best_supplier_using_cost_reliability_and_lead_time():
     suppliers = [
@@ -142,3 +144,113 @@ def test_rejects_zero_or_negative_required_quantity():
 
     with pytest.raises(ValueError, match="Required quantity"):
         optimize_supplier_selection(suppliers, required_quantity=-5)
+
+
+def test_returns_all_eligible_suppliers_ranked_by_optimization_score():
+    suppliers = [
+        create_supplier(
+            supplier_id="S001",
+            name="Supplier One",
+            country="India",
+            lead_time_days=10,
+            reliability_score=90,
+            unit_cost=100,
+            capacity=1000,
+            minimum_order_quantity=10,
+        ),
+        create_supplier(
+            supplier_id="S002",
+            name="Supplier Two",
+            country="India",
+            lead_time_days=5,
+            reliability_score=95,
+            unit_cost=110,
+            capacity=1000,
+            minimum_order_quantity=10,
+        ),
+        create_supplier(
+            supplier_id="S003",
+            name="Supplier Three",
+            country="India",
+            lead_time_days=15,
+            reliability_score=70,
+            unit_cost=90,
+            capacity=1000,
+            minimum_order_quantity=10,
+        ),
+    ]
+
+    result = optimize_supplier_selection(
+        suppliers,
+        required_quantity=100,
+    )
+
+    assert "supplier_rankings" in result
+
+    rankings = result["supplier_rankings"]
+
+    assert len(rankings) == 3
+
+    assert rankings[0]["supplier_id"] == "S002"
+    assert rankings[1]["supplier_id"] == "S001"
+    assert rankings[2]["supplier_id"] == "S003"
+
+    scores = [
+        supplier["optimization_score"]
+        for supplier in rankings
+    ]
+
+    assert scores == sorted(scores)
+
+
+def test_compare_suppliers_returns_ranked_results():
+    suppliers = [
+        create_supplier(
+            supplier_id="S001",
+            name="Supplier One",
+            country="India",
+            lead_time_days=10,
+            reliability_score=90,
+            unit_cost=100,
+            capacity=1000,
+            minimum_order_quantity=10,
+        ),
+        create_supplier(
+            supplier_id="S002",
+            name="Supplier Two",
+            country="India",
+            lead_time_days=5,
+            reliability_score=95,
+            unit_cost=110,
+            capacity=1000,
+            minimum_order_quantity=10,
+        ),
+        create_supplier(
+            supplier_id="S003",
+            name="Supplier Three",
+            country="India",
+            lead_time_days=15,
+            reliability_score=70,
+            unit_cost=90,
+            capacity=1000,
+            minimum_order_quantity=10,
+        ),
+    ]
+
+    results = compare_suppliers(
+        suppliers,
+        required_quantity=100,
+    )
+
+    assert len(results) == 3
+
+    assert results[0]["supplier_id"] == "S002"
+    assert results[1]["supplier_id"] == "S001"
+    assert results[2]["supplier_id"] == "S003"
+
+    assert results[0]["rank"] == 1
+    assert results[1]["rank"] == 2
+    assert results[2]["rank"] == 3
+
+    assert results[0]["total_cost"] == 11000
+    assert results[0]["optimization_score"] == 0.4

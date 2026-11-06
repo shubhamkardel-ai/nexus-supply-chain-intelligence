@@ -1267,3 +1267,220 @@ st.markdown(
     and receive AI-powered operational recommendations.
     """
 )
+
+
+# ==========================================
+# SUPPLIER PROCUREMENT OPTIMIZATION
+# ==========================================
+
+st.divider()
+
+st.header("Supplier Procurement Optimization")
+
+st.markdown(
+    """
+    Compare suppliers based on procurement cost, delivery time,
+    and reliability to identify the best eligible supplier.
+    """
+)
+
+st.info(
+    "Enter supplier procurement details below. "
+    "Cost and capacity values are user-provided inputs."
+)
+
+required_quantity = st.number_input(
+    "Required Procurement Quantity",
+    min_value=1,
+    value=100,
+    step=10,
+)
+
+st.subheader("Supplier Details")
+
+supplier_count = st.number_input(
+    "Number of Suppliers",
+    min_value=2,
+    max_value=10,
+    value=3,
+    step=1,
+)
+
+supplier_inputs = []
+
+for i in range(int(supplier_count)):
+
+    st.markdown(f"### Supplier {i + 1}")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        supplier_name = st.text_input(
+            "Supplier Name",
+            value=f"Supplier {i + 1}",
+            key=f"supplier_name_{i}",
+        )
+
+        supplier_id = st.text_input(
+            "Supplier ID",
+            value=f"SUP00{i + 1}",
+            key=f"supplier_id_{i}",
+        )
+
+        country = st.text_input(
+            "Country",
+            value="India",
+            key=f"supplier_country_{i}",
+        )
+
+    with col2:
+        lead_time = st.number_input(
+            "Lead Time (Days)",
+            min_value=1,
+            value=5,
+            key=f"supplier_lead_time_{i}",
+        )
+
+        reliability = st.number_input(
+            "Reliability Score (0–100)",
+            min_value=0.0,
+            max_value=100.0,
+            value=90.0,
+            key=f"supplier_reliability_{i}",
+        )
+
+        unit_cost = st.number_input(
+            "Unit Cost",
+            min_value=0.01,
+            value=120.0,
+            key=f"supplier_unit_cost_{i}",
+        )
+
+    with col3:
+        capacity = st.number_input(
+            "Available Capacity",
+            min_value=1,
+            value=500,
+            key=f"supplier_capacity_{i}",
+        )
+
+        minimum_order = st.number_input(
+            "Minimum Order Quantity",
+            min_value=1,
+            value=50,
+            key=f"supplier_moq_{i}",
+        )
+
+        email = st.text_input(
+            "Contact Email",
+            value=f"supplier{i + 1}@example.com",
+            key=f"supplier_email_{i}",
+        )
+
+    supplier_inputs.append(
+        {
+            "supplier_id": supplier_id,
+            "name": supplier_name,
+            "country": country,
+            "lead_time_days": int(lead_time),
+            "reliability_score": reliability,
+            "unit_cost": unit_cost,
+            "capacity": int(capacity),
+            "minimum_order_quantity": int(minimum_order),
+            "contact_email": email,
+        }
+    )
+
+    st.divider()
+
+
+if st.button(
+    "Optimize Supplier Selection",
+    type="primary",
+    use_container_width=True,
+):
+
+    payload = {
+        "required_quantity": int(required_quantity),
+        "suppliers": supplier_inputs,
+    }
+
+    with st.spinner("Comparing suppliers and optimizing procurement..."):
+
+        result = api_post_json(
+            "/suppliers/compare",
+            payload,
+        )
+
+    if result:
+
+        st.session_state["supplier_optimization_result"] = result
+
+        st.success("Supplier comparison completed successfully!")
+
+    else:
+        st.error(
+            "Supplier optimization failed. "
+            "Check supplier eligibility and API server."
+        )
+
+
+# Display saved supplier optimization results
+
+if "supplier_optimization_result" in st.session_state:
+
+    result = st.session_state["supplier_optimization_result"]
+
+    recommended = result["recommended_supplier"]
+
+    st.divider()
+
+    st.subheader("Recommended Supplier")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Supplier",
+        recommended["supplier_name"],
+    )
+
+    col2.metric(
+        "Total Procurement Cost",
+        f"{recommended['total_cost']:,.2f}",
+    )
+
+    col3.metric(
+        "Lead Time",
+        f"{recommended['lead_time_days']} days",
+    )
+
+    st.success(
+        f"Recommended supplier: {recommended['supplier_name']}"
+    )
+
+    st.subheader("Supplier Rankings")
+
+    rankings = result["supplier_rankings"]
+
+    st.dataframe(
+        [
+            {
+                "Rank": item["rank"],
+                "Supplier": item["supplier_name"],
+                "Supplier ID": item["supplier_id"],
+                "Unit Cost": item["unit_cost"],
+                "Total Cost": item["total_cost"],
+                "Lead Time (Days)": item["lead_time_days"],
+                "Reliability": item["reliability_score"],
+                "Optimization Score": item["optimization_score"],
+            }
+            for item in rankings
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.caption(
+        "Only eligible suppliers are included in the rankings. "
+        "Lower optimization scores indicate better overall performance."
+    )

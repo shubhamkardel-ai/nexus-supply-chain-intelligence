@@ -221,3 +221,65 @@ def test_forecast_includes_inventory_planning():
 
     assert "safety_stock" in result
     assert "reorder_point" in result
+
+def test_supplier_comparison():
+    payload = {
+        "required_quantity": 100,
+        "suppliers": [
+            {
+                "supplier_id": "SUP001",
+                "name": "Alpha Suppliers",
+                "country": "India",
+                "lead_time_days": 5,
+                "reliability_score": 95,
+                "unit_cost": 120,
+                "capacity": 500,
+                "minimum_order_quantity": 50,
+                "contact_email": "alpha@example.com",
+            },
+            {
+                "supplier_id": "SUP002",
+                "name": "Beta Suppliers",
+                "country": "India",
+                "lead_time_days": 3,
+                "reliability_score": 90,
+                "unit_cost": 125,
+                "capacity": 300,
+                "minimum_order_quantity": 100,
+                "contact_email": "beta@example.com",
+            },
+            {
+                "supplier_id": "SUP003",
+                "name": "Gamma Suppliers",
+                "country": "Germany",
+                "lead_time_days": 8,
+                "reliability_score": 98,
+                "unit_cost": 110,
+                "capacity": 1000,
+                "minimum_order_quantity": 200,
+                "contact_email": "gamma@example.com",
+            },
+        ],
+    }
+
+    response = client.post("/suppliers/compare", json=payload)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["required_quantity"] == 100
+
+    assert data["recommended_supplier"]["supplier_id"] == "SUP001"
+
+    rankings = data["supplier_rankings"]
+
+    assert len(rankings) == 2
+    assert rankings[0]["rank"] == 1
+    assert rankings[1]["rank"] == 2
+
+    assert rankings[0]["supplier_id"] == "SUP001"
+    assert rankings[1]["supplier_id"] == "SUP002"
+
+    assert rankings[0]["total_cost"] == 12000
+    assert rankings[1]["total_cost"] == 12500

@@ -35,6 +35,9 @@ from services.inventory_service import (
     get_inventory_recommendation,
 )
 
+from services.supplier_service import create_supplier
+from services.supply_chain_optimizer import compare_suppliers
+
 class DisruptionRequest(BaseModel):
     product_id: str = Field(..., min_length=1)
     disruption_type: str = Field(..., min_length=1)
@@ -196,6 +199,22 @@ class DecisionResponse(BaseModel):
     recommended_action: str
     priority: str
     rationale: str
+
+class SupplierInput(BaseModel):
+    supplier_id: str = Field(..., min_length=1)
+    name: str = Field(..., min_length=1)
+    country: str = Field(..., min_length=1)
+    lead_time_days: int = Field(..., ge=1)
+    reliability_score: float = Field(..., ge=0, le=100)
+    unit_cost: float = Field(..., gt=0)
+    capacity: int = Field(..., ge=1)
+    minimum_order_quantity: int = Field(..., ge=1)
+    contact_email: str | None = None
+
+
+class SupplierComparisonRequest(BaseModel):
+    required_quantity: int = Field(..., ge=1)
+    suppliers: list[SupplierInput] = Field(..., min_length=1)
 
 file_path = Path("data/sales.csv")
 
@@ -479,3 +498,36 @@ def decision_explanation(request: DecisionRequest):
     )
 
     return explanation
+
+
+@app.post("/suppliers/compare")
+def supplier_comparison(
+    request: SupplierComparisonRequest,
+):
+    suppliers = []
+
+    for item in request.suppliers:
+        supplier = create_supplier(
+            supplier_id=item.supplier_id,
+            name=item.name,
+            country=item.country,
+            lead_time_days=item.lead_time_days,
+            reliability_score=item.reliability_score,
+            unit_cost=item.unit_cost,
+            capacity=item.capacity,
+            minimum_order_quantity=item.minimum_order_quantity,
+            contact_email=item.contact_email,
+        )
+
+        suppliers.append(supplier)
+
+    rankings = compare_suppliers(
+        suppliers=suppliers,
+        required_quantity=request.required_quantity,
+    )
+
+    return {
+        "required_quantity": request.required_quantity,
+        "recommended_supplier": rankings[0],
+        "supplier_rankings": rankings,
+    }
