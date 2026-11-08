@@ -283,3 +283,90 @@ def test_supplier_comparison():
 
     assert rankings[0]["total_cost"] == 12000
     assert rankings[1]["total_cost"] == 12500
+
+
+def test_supplier_analytics():
+    payload = {
+        "required_quantity": 100,
+        "suppliers": [
+            {
+                "supplier_id": "SUP001",
+                "name": "Alpha Suppliers",
+                "country": "India",
+                "lead_time_days": 5,
+                "reliability_score": 95,
+                "unit_cost": 120,
+                "capacity": 500,
+                "minimum_order_quantity": 50,
+                "contact_email": "alpha@example.com",
+            },
+            {
+                "supplier_id": "SUP002",
+                "name": "Beta Suppliers",
+                "country": "India",
+                "lead_time_days": 3,
+                "reliability_score": 90,
+                "unit_cost": 125,
+                "capacity": 300,
+                "minimum_order_quantity": 100,
+                "contact_email": "beta@example.com",
+            },
+            {
+                "supplier_id": "SUP003",
+                "name": "Gamma Suppliers",
+                "country": "Germany",
+                "lead_time_days": 8,
+                "reliability_score": 98,
+                "unit_cost": 110,
+                "capacity": 1000,
+                "minimum_order_quantity": 200,
+                "contact_email": "gamma@example.com",
+            },
+        ],
+    }
+
+    response = client.post("/suppliers/analytics", json=payload)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["required_quantity"] == 100
+
+    assert data["recommended_supplier"]["supplier_id"] == "SUP001"
+
+    analytics = data["analytics"]
+
+    # Cost analysis
+    cost = analytics["cost_analysis"]
+
+    assert cost["lowest_cost_supplier"]["supplier_id"] == "SUP001"
+    assert cost["highest_cost_supplier"]["supplier_id"] == "SUP002"
+    assert cost["cost_difference"] == 500
+
+    # Performance analysis
+    performance = analytics["performance_analysis"]
+
+    assert performance["fastest_supplier"]["supplier_id"] == "SUP002"
+    assert performance["most_reliable_supplier"]["supplier_id"] == "SUP001"
+
+    # Eligibility analysis
+    eligibility = analytics["eligibility_analysis"]
+
+    assert eligibility["eligible_count"] == 2
+    assert eligibility["excluded_count"] == 1
+
+    excluded = next(
+        supplier for supplier in eligibility["supplier_details"]
+        if supplier["supplier_id"] == "SUP003"
+    )
+
+    assert excluded["eligible"] is False
+    assert "Order quantity is below supplier minimum" in excluded["reasons"]
+
+    # Recommendation explanation
+    explanation = analytics["recommendation_explanation"]
+
+    assert explanation["recommended_supplier"] == "Alpha Suppliers"
+    assert len(explanation["reasons"]) > 0
+    assert len(explanation["trade_offs"]) > 0

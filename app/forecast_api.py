@@ -8,6 +8,11 @@ from services.disruption_service import simulate_disruption
 
 from services.impact_analysis_service import analyze_disruption_impact
 
+from services.supplier_service import create_supplier
+from services.supply_chain_optimizer import compare_suppliers
+from services.supplier_analytics import generate_supplier_analytics
+
+
 from services.decision_engine import generate_decision
 
 from fastapi import FastAPI
@@ -530,4 +535,44 @@ def supplier_comparison(
         "required_quantity": request.required_quantity,
         "recommended_supplier": rankings[0],
         "supplier_rankings": rankings,
+    }
+
+
+@app.post("/suppliers/analytics")
+def supplier_analytics(
+    request: SupplierComparisonRequest,
+):
+    suppliers = []
+
+    for item in request.suppliers:
+        supplier = create_supplier(
+            supplier_id=item.supplier_id,
+            name=item.name,
+            country=item.country,
+            lead_time_days=item.lead_time_days,
+            reliability_score=item.reliability_score,
+            unit_cost=item.unit_cost,
+            capacity=item.capacity,
+            minimum_order_quantity=item.minimum_order_quantity,
+            contact_email=item.contact_email,
+        )
+
+        suppliers.append(supplier)
+
+    rankings = compare_suppliers(
+        suppliers=suppliers,
+        required_quantity=request.required_quantity,
+    )
+
+    analytics = generate_supplier_analytics(
+        suppliers=suppliers,
+        required_quantity=request.required_quantity,
+        supplier_rankings=rankings,
+    )
+
+    return {
+        "required_quantity": request.required_quantity,
+        "recommended_supplier": rankings[0],
+        "supplier_rankings": rankings,
+        "analytics": analytics,
     }
