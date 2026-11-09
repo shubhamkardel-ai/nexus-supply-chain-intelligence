@@ -1408,7 +1408,7 @@ if st.button(
     with st.spinner("Comparing suppliers and optimizing procurement..."):
 
         result = api_post_json(
-            "/suppliers/compare",
+            "/suppliers/analytics",
             payload,
         )
 
@@ -1484,3 +1484,101 @@ if "supplier_optimization_result" in st.session_state:
         "Only eligible suppliers are included in the rankings. "
         "Lower optimization scores indicate better overall performance."
     )
+
+
+    # Advanced Supplier Analytics
+
+    analytics = result["analytics"]
+
+    st.divider()
+    st.header("Advanced Supplier Analytics")
+
+    # 1. Procurement Cost Analysis
+    cost_analysis = analytics["cost_analysis"]
+
+    st.subheader("Procurement Cost Analysis")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Lowest Cost Supplier",
+        cost_analysis["lowest_cost_supplier"]["supplier_name"],
+        f"{cost_analysis['lowest_cost_supplier']['total_cost']:,.2f}",
+    )
+
+    col2.metric(
+        "Highest Cost Supplier",
+        cost_analysis["highest_cost_supplier"]["supplier_name"],
+        f"{cost_analysis['highest_cost_supplier']['total_cost']:,.2f}",
+    )
+
+    col3.metric(
+        "Cost Difference",
+        f"{cost_analysis['cost_difference']:,.2f}",
+    )
+
+    st.dataframe(
+        cost_analysis["supplier_costs"],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    # 2. Supplier Performance Analysis
+    performance = analytics["performance_analysis"]
+
+    st.subheader("Supplier Performance Analysis")
+
+    col1, col2 = st.columns(2)
+
+    col1.metric(
+        "Fastest Supplier",
+        performance["fastest_supplier"]["supplier_name"],
+        f"{performance['fastest_supplier']['lead_time_days']} days",
+    )
+
+    col2.metric(
+        "Most Reliable Supplier",
+        performance["most_reliable_supplier"]["supplier_name"],
+        f"{performance['most_reliable_supplier']['reliability_score']} reliability",
+    )
+
+    # 3. Supplier Eligibility Analysis
+    eligibility = analytics["eligibility_analysis"]
+
+    st.subheader("Supplier Eligibility Analysis")
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("Eligible Suppliers", eligibility["eligible_count"])
+    col2.metric("Excluded Suppliers", eligibility["excluded_count"])
+
+    st.dataframe(
+        [
+            {
+                "Supplier ID": item["supplier_id"],
+                "Supplier": item["supplier_name"],
+                "Eligible": "Yes" if item["eligible"] else "No",
+                "Reasons": ", ".join(item["reasons"]) or "Eligible",
+            }
+            for item in eligibility["supplier_details"]
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    # 4. Recommendation Explanation
+    explanation = analytics["recommendation_explanation"]
+
+    st.subheader("Procurement Recommendation Explanation")
+
+    st.info(explanation["summary"])
+
+    st.markdown("**Key Recommendation Reasons**")
+
+    for reason in explanation["reasons"]:
+        st.markdown(f"- {reason}")
+
+    st.markdown("**Procurement Trade-offs**")
+
+    for trade_off in explanation["trade_offs"]:
+        st.markdown(f"- {trade_off}")
