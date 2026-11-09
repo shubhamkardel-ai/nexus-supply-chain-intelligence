@@ -16,7 +16,6 @@ from services.supplier_analytics import generate_supplier_analytics
 from services.decision_engine import generate_decision
 
 from fastapi import FastAPI, HTTPException
-from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from services.scenario_service import calculate_scenario
 
