@@ -370,3 +370,28 @@ def test_supplier_analytics():
     assert explanation["recommended_supplier"] == "Alpha Suppliers"
     assert len(explanation["reasons"]) > 0
     assert len(explanation["trade_offs"]) > 0
+
+def test_supplier_comparison_returns_400_when_no_supplier_is_eligible():
+    payload = {
+        "required_quantity": 100,
+        "suppliers": [
+            {
+                "supplier_id": "SUP999",
+                "name": "Insufficient Capacity Supplier",
+                "country": "India",
+                "lead_time_days": 5,
+                "reliability_score": 90,
+                "unit_cost": 100,
+                "capacity": 50,
+                "minimum_order_quantity": 10,
+                "contact_email": "supplier@example.com",
+            }
+        ],
+    }
+
+    response = client.post("/suppliers/compare", json=payload)
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "No supplier can fulfill the required quantity."
+    )

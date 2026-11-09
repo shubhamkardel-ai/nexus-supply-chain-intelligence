@@ -15,6 +15,7 @@ from services.supplier_analytics import generate_supplier_analytics
 
 from services.decision_engine import generate_decision
 
+from fastapi import FastAPI, HTTPException
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from services.scenario_service import calculate_scenario
@@ -40,8 +41,6 @@ from services.inventory_service import (
     get_inventory_recommendation,
 )
 
-from services.supplier_service import create_supplier
-from services.supply_chain_optimizer import compare_suppliers
 
 class DisruptionRequest(BaseModel):
     product_id: str = Field(..., min_length=1)
@@ -526,10 +525,16 @@ def supplier_comparison(
 
         suppliers.append(supplier)
 
-    rankings = compare_suppliers(
-        suppliers=suppliers,
-        required_quantity=request.required_quantity,
-    )
+    try:
+        rankings = compare_suppliers(
+            suppliers=suppliers,
+            required_quantity=request.required_quantity,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
     return {
         "required_quantity": request.required_quantity,
