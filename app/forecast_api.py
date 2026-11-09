@@ -141,15 +141,6 @@ class InventoryPlanResponse(BaseModel):
     safety_stock: int
     reorder_point: int
 
-class InventoryPlanResponse(BaseModel):
-    average_daily_demand: float
-    demand_std_dev: float
-    lead_time_days: int
-    service_level_z: float
-    lead_time_demand: int
-    safety_stock: int
-    reorder_point: int
-
 
 class ScenarioRequest(BaseModel):
     product_id: str = Field(..., min_length=1)
