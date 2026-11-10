@@ -2,6 +2,26 @@
 
 > AI-powered demand forecasting and supply chain decision intelligence platform.
 
+<div align="center">
+
+<a href="https://nexus-supply-chain.streamlit.app">
+  <img src="https://img.shields.io/badge/🚀%20LIVE%20DASHBOARD-2563EB?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Dashboard"/>
+</a>
+
+<a href="https://nexus-supply-chain-intelligence.onrender.com/docs">
+  <img src="https://img.shields.io/badge/⚡%20API%20DOCS-059669?style=for-the-badge&logo=fastapi&logoColor=white" alt="API Documentation"/>
+</a>
+
+<a href="https://github.com/shubhamkardel-ai/nexus-supply-chain-intelligence">
+  <img src="https://img.shields.io/badge/💻%20SOURCE%20CODE-111827?style=for-the-badge&logo=github&logoColor=white" alt="Source Code"/>
+</a>
+
+<br/><br/>
+
+**AI-powered demand forecasting · inventory intelligence · supply chain decision support**
+
+</div>
+
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Machine%20Learning-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
